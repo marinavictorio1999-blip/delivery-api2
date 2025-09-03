@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestauranteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.controller</a> &gt; <span class="el_source">RestauranteController.java</span></div><h1>RestauranteController.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.controller;
+
+import com.deliverytech.delivery_api.dto.request.RestauranteRequest;
+import com.deliverytech.delivery_api.dto.response.ApiResponseWrapper;
+import com.deliverytech.delivery_api.model.Restaurante;
+import com.deliverytech.delivery_api.service.RestauranteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+<span class="fc" id="L18">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/api/restaurantes&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
+public class RestauranteController {
+
+    private final RestauranteService restauranteService;
+
+    /**
+     * Cadastrar novo restaurante
+     * POST /restaurantes
+     */
+    @PostMapping
+    public ResponseEntity&lt;?&gt; cadastrar(@Valid @RequestBody RestauranteRequest restauranteRequest) {
+        try {
+<span class="nc" id="L34">            log.info(&quot;Recebida requisição para cadastrar restaurante: {}&quot;, restauranteRequest.getNome());</span>
+<span class="nc" id="L35">            Restaurante restauranteSalvo = restauranteService.cadastrar(restauranteRequest);</span>
+<span class="nc" id="L36">            return ResponseEntity.status(HttpStatus.CREATED).body(restauranteSalvo);</span>
+<span class="nc" id="L37">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L38">            log.warn(&quot;Erro de validação ao cadastrar restaurante: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L39">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L40">        } catch (Exception e) {</span>
+<span class="nc" id="L41">            log.error(&quot;Erro interno ao cadastrar restaurante&quot;, e);</span>
+<span class="nc" id="L42">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L43">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Listar todos os restaurantes ativos
+     * GET /restaurantes
+     */
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; listar() {
+<span class="nc" id="L53">        log.info(&quot;Recebida requisição para listar restaurantes ativos&quot;);</span>
+<span class="nc" id="L54">        List&lt;Restaurante&gt; restaurantes = restauranteService.listarAtivos();</span>
+<span class="nc" id="L55">        return ResponseEntity.ok(restaurantes);</span>
+    }
+
+    /**
+     * Buscar restaurante por ID
+     * GET /restaurantes/{id}
+     */
+    @GetMapping(&quot;/{id}&quot;) // corrigido
+    public ResponseEntity&lt;ApiResponseWrapper&lt;Restaurante&gt;&gt; buscarPorId(@PathVariable Long id) {
+<span class="nc" id="L64">        log.info(&quot;Recebida requisição para buscar restaurante por ID: {}&quot;, id);</span>
+
+<span class="nc" id="L66">        return restauranteService.buscarPorId(id)</span>
+<span class="nc" id="L67">            .map(restaurante -&gt; ResponseEntity.ok(new ApiResponseWrapper&lt;&gt;(true, restaurante, &quot;Restaurante encontrado&quot;)))</span>
+<span class="nc" id="L68">            .orElseGet(() -&gt; ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
+<span class="nc" id="L69">                .body(new ApiResponseWrapper&lt;&gt;(false, null, &quot;Restaurante não encontrado&quot;)));</span>
+    }
+
+
+    /**
+     * Buscar restaurante por CNPJ
+     * GET /restaurantes/cnpj/{cnpj}
+     */
+    @GetMapping(&quot;/cnpj/{cnpj}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorCnpj(@PathVariable String cnpj) {
+<span class="nc" id="L79">        log.info(&quot;Recebida requisição para buscar restaurante por CNPJ: {}&quot;, cnpj);</span>
+<span class="nc" id="L80">        return restauranteService.buscarPorCnpj(cnpj)</span>
+<span class="nc" id="L81">            .map(ResponseEntity::ok)</span>
+<span class="nc" id="L82">            .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    /**
+     * Buscar restaurantes por nome
+     * GET /restaurantes/buscar?nome=Pizzaria
+     */
+    @GetMapping(&quot;/buscar&quot;)
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; buscarPorNome(@RequestParam String nome) {
+<span class="nc" id="L91">        log.info(&quot;Recebida requisição para buscar restaurantes por nome: {}&quot;, nome);</span>
+<span class="nc" id="L92">        List&lt;Restaurante&gt; restaurantes = restauranteService.buscarPorNome(nome);</span>
+<span class="nc" id="L93">        return ResponseEntity.ok(restaurantes);</span>
+    }
+
+    /**
+     * Buscar restaurantes por especialidade
+     * GET /restaurantes/especialidade/{especialidade}
+     */
+    @GetMapping(&quot;/especialidade/{especialidade}&quot;)
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; buscarPorEspecialidade(@PathVariable String especialidade) {
+<span class="nc" id="L102">        log.info(&quot;Recebida requisição para buscar restaurantes por especialidade: {}&quot;, especialidade);</span>
+<span class="nc" id="L103">        List&lt;Restaurante&gt; restaurantes = restauranteService.buscarPorEspecialidade(especialidade);</span>
+<span class="nc" id="L104">        return ResponseEntity.ok(restaurantes);</span>
+    }
+
+    /**
+     * Atualizar restaurante
+     * PUT /api/restaurantes/{id}
+     */
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; atualizar(@PathVariable Long id,
+                                      @Valid @RequestBody RestauranteRequest restauranteRequest) {
+        try {
+<span class="nc" id="L115">            log.info(&quot;Recebida requisição para atualizar restaurante ID: {}&quot;, id);</span>
+<span class="nc" id="L116">            Restaurante restauranteAtualizado = restauranteService.atualizar(id, restauranteRequest);</span>
+<span class="nc" id="L117">            return ResponseEntity.ok(restauranteAtualizado);</span>
+<span class="nc" id="L118">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L119">            log.warn(&quot;Erro de validação ao atualizar restaurante: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L120">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L121">        } catch (Exception e) {</span>
+<span class="nc" id="L122">            log.error(&quot;Erro interno ao atualizar restaurante&quot;, e);</span>
+<span class="nc" id="L123">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L124">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Inativar restaurante (soft delete)
+     * DELETE /restaurantes/{id}
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; inativar(@PathVariable Long id) {
+        try {
+<span class="nc" id="L135">            log.info(&quot;Recebida requisição para inativar restaurante ID: {}&quot;, id);</span>
+<span class="nc" id="L136">            restauranteService.inativar(id);</span>
+<span class="nc" id="L137">            return ResponseEntity.ok().body(&quot;Restaurante inativado com sucesso&quot;);</span>
+<span class="nc" id="L138">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L139">            log.warn(&quot;Erro ao inativar restaurante: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L140">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L141">        } catch (Exception e) {</span>
+<span class="nc" id="L142">            log.error(&quot;Erro interno ao inativar restaurante&quot;, e);</span>
+<span class="nc" id="L143">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L144">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Ativar/Desativar restaurante (toggle status ativo)
+     * PATCH /api/restaurantes/{id}/status
+     */
+    @PatchMapping(&quot;/{id}/status&quot;)
+    public ResponseEntity&lt;?&gt; alterarStatus(@PathVariable Long id) {
+        try {
+<span class="nc" id="L155">            log.info(&quot;Recebida requisição para alternar status do restaurante ID: {}&quot;, id);</span>
+<span class="nc" id="L156">            Restaurante restaurante = restauranteService.ativarDesativarRestaurante(id);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">            String status = restaurante.getAtivo() ? &quot;ativado&quot; : &quot;desativado&quot;;</span>
+<span class="nc" id="L158">            return ResponseEntity.ok().body(&quot;Restaurante &quot; + status + &quot; com sucesso&quot;);</span>
+<span class="nc" id="L159">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L160">            log.warn(&quot;Erro ao alternar status do restaurante: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L161">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L162">        } catch (Exception e) {</span>
+<span class="nc" id="L163">            log.error(&quot;Erro interno ao alternar status do restaurante&quot;, e);</span>
+<span class="nc" id="L164">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L165">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Buscar restaurantes com produtos disponíveis
+     * GET /restaurantes/com-produtos-disponiveis
+     */
+    @GetMapping(&quot;/com-produtos-disponiveis&quot;)
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; buscarComProdutosDisponiveis() {
+<span class="nc" id="L175">        log.info(&quot;Recebida requisição para buscar restaurantes com produtos disponíveis&quot;);</span>
+<span class="nc" id="L176">        List&lt;Restaurante&gt; restaurantes = restauranteService.buscarComProdutosDisponiveis();</span>
+<span class="nc" id="L177">        return ResponseEntity.ok(restaurantes);</span>
+    }
+
+    /**
+     * Ranking de restaurantes por número de pedidos
+     * GET /restaurantes/ranking
+     */
+    @GetMapping(&quot;/ranking&quot;)
+    public ResponseEntity&lt;List&lt;Map&lt;String, Object&gt;&gt;&gt; rankingPorPedidos() {
+<span class="nc" id="L186">        log.info(&quot;Recebida requisição para ranking de restaurantes por pedidos&quot;);</span>
+<span class="nc" id="L187">        List&lt;Object[]&gt; ranking = restauranteService.rankingPorPedidos();</span>
+        
+<span class="nc" id="L189">        List&lt;Map&lt;String, Object&gt;&gt; response = ranking.stream()</span>
+<span class="nc" id="L190">            .map(row -&gt; {</span>
+<span class="nc" id="L191">                Map&lt;String, Object&gt; item = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L192">                item.put(&quot;nome&quot;, row[0]);</span>
+<span class="nc" id="L193">                item.put(&quot;totalPedidos&quot;, row[1]);</span>
+<span class="nc" id="L194">                return item;</span>
+            })
+<span class="nc" id="L196">            .toList();</span>
+        
+<span class="nc" id="L198">        return ResponseEntity.ok(response);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

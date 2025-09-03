@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestauranteServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">RestauranteServiceImpl.java</span></div><h1>RestauranteServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.dto.request.RestauranteRequest;
+import com.deliverytech.delivery_api.model.Restaurante;
+import com.deliverytech.delivery_api.repository.RestauranteRepository;
+import com.deliverytech.delivery_api.service.RestauranteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+<span class="fc" id="L15">@Slf4j</span>
+@Service
+@Transactional
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
+public class RestauranteServiceImpl implements RestauranteService {
+
+    private final RestauranteRepository restauranteRepository;
+
+    /**
+     * Cadastra um novo restaurante
+     */
+    @Override
+    public Restaurante cadastrar(RestauranteRequest restauranteRequest) {
+<span class="nc" id="L28">        log.info(&quot;Iniciando cadastro de restaurante: {}&quot;, restauranteRequest.getNome());</span>
+        
+        // Converter RestauranteRequest para Restaurante
+<span class="nc" id="L31">        Restaurante restaurante = new Restaurante();</span>
+<span class="nc" id="L32">        restaurante.setNome(restauranteRequest.getNome());</span>
+<span class="nc" id="L33">        restaurante.setCnpj(restauranteRequest.getCnpj());</span>
+<span class="nc" id="L34">        restaurante.setEndereco(restauranteRequest.getEndereco());</span>
+<span class="nc" id="L35">        restaurante.setTelefone(restauranteRequest.getTelefone());</span>
+<span class="nc" id="L36">        restaurante.setEspecialidade(restauranteRequest.getEspecialidade());</span>
+<span class="nc" id="L37">        restaurante.setDescricao(restauranteRequest.getDescricao());</span>
+<span class="nc" id="L38">        restaurante.setHorarioFuncionamento(restauranteRequest.getHorarioFuncionamento());</span>
+        
+        // Validar CNPJ único
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (restauranteRepository.existsByCnpj(restaurante.getCnpj())) {</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;CNPJ já cadastrado: &quot; + restaurante.getCnpj());</span>
+        }
+        
+        // Validações de negócio
+<span class="nc" id="L46">        validarDadosRestaurante(restaurante);</span>
+        
+        // Definir como ativo por padrão
+<span class="nc" id="L49">        restaurante.setAtivo(true);</span>
+        
+<span class="nc" id="L51">        Restaurante restauranteSalvo = restauranteRepository.save(restaurante);</span>
+<span class="nc" id="L52">        log.info(&quot;Restaurante cadastrado com sucesso - ID: {}&quot;, restauranteSalvo.getId());</span>
+        
+<span class="nc" id="L54">        return restauranteSalvo;</span>
+    }
+
+    /**
+     * Busca restaurante por ID
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Restaurante&gt; buscarPorId(Long id) {
+<span class="nc" id="L63">        log.info(&quot;Buscando restaurante por ID: {}&quot;, id);</span>
+<span class="nc" id="L64">        return restauranteRepository.findById(id);</span>
+    }
+
+    /**
+     * Busca restaurante por CNPJ
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Restaurante&gt; buscarPorCnpj(String cnpj) {
+<span class="nc" id="L73">        log.info(&quot;Buscando restaurante por CNPJ: {}&quot;, cnpj);</span>
+<span class="nc" id="L74">        return restauranteRepository.findByCnpj(cnpj);</span>
+    }
+
+    /**
+     * Lista todos os restaurantes ativos
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Restaurante&gt; listarAtivos() {
+<span class="nc" id="L83">        log.info(&quot;Listando todos os restaurantes ativos&quot;);</span>
+<span class="nc" id="L84">        return restauranteRepository.findByAtivoTrue();</span>
+    }
+
+    /**
+     * Busca restaurantes por nome
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Restaurante&gt; buscarPorNome(String nome) {
+<span class="nc" id="L93">        log.info(&quot;Buscando restaurantes por nome: {}&quot;, nome);</span>
+<span class="nc" id="L94">        return restauranteRepository.findByNomeContainingIgnoreCase(nome);</span>
+    }
+
+    /**
+     * Busca restaurantes por especialidade
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Restaurante&gt; buscarPorEspecialidade(String especialidade) {
+<span class="nc" id="L103">        log.info(&quot;Buscando restaurantes por especialidade: {}&quot;, especialidade);</span>
+<span class="nc" id="L104">        return restauranteRepository.findByEspecialidadeContainingIgnoreCase(especialidade);</span>
+    }
+
+    /**
+     * Atualiza dados do restaurante
+     */
+    @Override
+    public Restaurante atualizar(Long id, RestauranteRequest restauranteRequest) {
+<span class="nc" id="L112">        log.info(&quot;Atualizando restaurante ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L114">        Restaurante restaurante = buscarPorId(id)</span>
+<span class="nc" id="L115">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + id));</span>
+
+        // Verificar se CNPJ não está sendo usado por outro restaurante
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (!restaurante.getCnpj().equals(restauranteRequest.getCnpj()) &amp;&amp; </span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">            restauranteRepository.existsByCnpj(restauranteRequest.getCnpj())) {</span>
+<span class="nc" id="L120">            throw new IllegalArgumentException(&quot;CNPJ já cadastrado: &quot; + restauranteRequest.getCnpj());</span>
+        }
+
+        // Criar restaurante temporário para validação
+<span class="nc" id="L124">        Restaurante restauranteParaValidacao = new Restaurante();</span>
+<span class="nc" id="L125">        restauranteParaValidacao.setNome(restauranteRequest.getNome());</span>
+<span class="nc" id="L126">        restauranteParaValidacao.setCnpj(restauranteRequest.getCnpj());</span>
+<span class="nc" id="L127">        restauranteParaValidacao.setEndereco(restauranteRequest.getEndereco());</span>
+<span class="nc" id="L128">        restauranteParaValidacao.setTelefone(restauranteRequest.getTelefone());</span>
+<span class="nc" id="L129">        restauranteParaValidacao.setEspecialidade(restauranteRequest.getEspecialidade());</span>
+<span class="nc" id="L130">        restauranteParaValidacao.setDescricao(restauranteRequest.getDescricao());</span>
+<span class="nc" id="L131">        restauranteParaValidacao.setHorarioFuncionamento(restauranteRequest.getHorarioFuncionamento());</span>
+
+        // Validar dados atualizados
+<span class="nc" id="L134">        validarDadosRestaurante(restauranteParaValidacao);</span>
+
+        // Atualizar campos
+<span class="nc" id="L137">        restaurante.setNome(restauranteRequest.getNome());</span>
+<span class="nc" id="L138">        restaurante.setCnpj(restauranteRequest.getCnpj());</span>
+<span class="nc" id="L139">        restaurante.setEndereco(restauranteRequest.getEndereco());</span>
+<span class="nc" id="L140">        restaurante.setTelefone(restauranteRequest.getTelefone());</span>
+<span class="nc" id="L141">        restaurante.setEspecialidade(restauranteRequest.getEspecialidade());</span>
+<span class="nc" id="L142">        restaurante.setDescricao(restauranteRequest.getDescricao());</span>
+<span class="nc" id="L143">        restaurante.setHorarioFuncionamento(restauranteRequest.getHorarioFuncionamento());</span>
+        
+<span class="nc" id="L145">        Restaurante restauranteSalvo = restauranteRepository.save(restaurante);</span>
+<span class="nc" id="L146">        log.info(&quot;Restaurante atualizado com sucesso - ID: {}&quot;, restauranteSalvo.getId());</span>
+        
+<span class="nc" id="L148">        return restauranteSalvo;</span>
+    }
+
+    /**
+     * Inativa restaurante (soft delete)
+     */
+    @Override
+    public void inativar(Long id) {
+<span class="nc" id="L156">        log.info(&quot;Inativando restaurante ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L158">        Restaurante restaurante = buscarPorId(id)</span>
+<span class="nc" id="L159">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + id));</span>
+        
+<span class="nc" id="L161">        restaurante.inativar();</span>
+<span class="nc" id="L162">        restauranteRepository.save(restaurante);</span>
+        
+<span class="nc" id="L164">        log.info(&quot;Restaurante inativado com sucesso - ID: {}&quot;, id);</span>
+<span class="nc" id="L165">    }</span>
+
+    /**
+     * Ativa/Desativa restaurante (toggle status)
+     */
+    @Override
+    public Restaurante ativarDesativarRestaurante(Long id) {
+<span class="nc" id="L172">        log.info(&quot;Alterando status do restaurante ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L174">        Restaurante restaurante = buscarPorId(id)</span>
+<span class="nc" id="L175">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + id));</span>
+        
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        restaurante.setAtivo(!restaurante.getAtivo());</span>
+<span class="nc" id="L178">        Restaurante restauranteSalvo = restauranteRepository.save(restaurante);</span>
+        
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        String statusAtual = restauranteSalvo.getAtivo() ? &quot;ativado&quot; : &quot;desativado&quot;;</span>
+<span class="nc" id="L181">        log.info(&quot;Restaurante {} com sucesso - ID: {}&quot;, statusAtual, id);</span>
+        
+<span class="nc" id="L183">        return restauranteSalvo;</span>
+    }
+
+    /**
+     * Busca restaurantes com produtos disponíveis
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Restaurante&gt; buscarComProdutosDisponiveis() {
+<span class="nc" id="L192">        log.info(&quot;Buscando restaurantes com produtos disponíveis&quot;);</span>
+<span class="nc" id="L193">        return restauranteRepository.findRestaurantesWithProdutosDisponiveis();</span>
+    }
+
+    /**
+     * Ranking de restaurantes por número de pedidos
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Object[]&gt; rankingPorPedidos() {
+<span class="nc" id="L202">        log.info(&quot;Gerando ranking de restaurantes por pedidos&quot;);</span>
+<span class="nc" id="L203">        return restauranteRepository.rankingRestaurantesPorPedidos();</span>
+    }
+
+    /**
+     * Validações de negócio
+     */
+    private void validarDadosRestaurante(Restaurante restaurante) {
+<span class="nc bnc" id="L210" title="All 4 branches missed.">        if (restaurante.getNome() == null || restaurante.getNome().trim().isEmpty()) {</span>
+<span class="nc" id="L211">            throw new IllegalArgumentException(&quot;Nome é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L214" title="All 4 branches missed.">        if (restaurante.getCnpj() == null || restaurante.getCnpj().trim().isEmpty()) {</span>
+<span class="nc" id="L215">            throw new IllegalArgumentException(&quot;CNPJ é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (restaurante.getNome().length() &lt; 3) {</span>
+<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;Nome deve ter pelo menos 3 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (restaurante.getNome().length() &gt; 100) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;Nome não pode ter mais de 100 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L226" title="All 4 branches missed.">        if (restaurante.getCnpj().length() != 14 || !restaurante.getCnpj().matches(&quot;\\d+&quot;)) {</span>
+<span class="nc" id="L227">            throw new IllegalArgumentException(&quot;CNPJ deve ter 14 dígitos numéricos&quot;);</span>
+        }
+
+<span class="nc bnc" id="L230" title="All 4 branches missed.">        if (restaurante.getEndereco() == null || restaurante.getEndereco().trim().isEmpty()) {</span>
+<span class="nc" id="L231">            throw new IllegalArgumentException(&quot;Endereço é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L234" title="All 4 branches missed.">        if (restaurante.getTelefone() == null || restaurante.getTelefone().trim().isEmpty()) {</span>
+<span class="nc" id="L235">            throw new IllegalArgumentException(&quot;Telefone é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (!restaurante.getTelefone().matches(&quot;\\d{10,11}&quot;)) {</span>
+<span class="nc" id="L239">            throw new IllegalArgumentException(&quot;Telefone deve ter entre 10 e 11 dígitos&quot;);</span>
+        }
+
+<span class="nc bnc" id="L242" title="All 4 branches missed.">        if (restaurante.getEspecialidade() == null || restaurante.getEspecialidade().trim().isEmpty()) {</span>
+<span class="nc" id="L243">            throw new IllegalArgumentException(&quot;Especialidade é obrigatória&quot;);</span>
+        }
+
+<span class="nc bnc" id="L246" title="All 4 branches missed.">        if (restaurante.getHorarioFuncionamento() == null || restaurante.getHorarioFuncionamento().trim().isEmpty()) {</span>
+<span class="nc" id="L247">            throw new IllegalArgumentException(&quot;Horário de funcionamento é obrigatório&quot;);</span>
+        }
+<span class="nc" id="L249">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

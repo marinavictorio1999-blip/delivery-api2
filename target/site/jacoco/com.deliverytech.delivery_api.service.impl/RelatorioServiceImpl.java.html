@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RelatorioServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">RelatorioServiceImpl.java</span></div><h1>RelatorioServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.repository.PedidoRepository;
+import com.deliverytech.delivery_api.service.RelatorioService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+<span class="fc" id="L15">@Slf4j</span>
+@Service
+<span class="fc" id="L17">@RequiredArgsConstructor</span>
+@Transactional(readOnly = true)
+public class RelatorioServiceImpl implements RelatorioService {
+
+    private final PedidoRepository pedidoRepository;
+
+    @Override
+    public List&lt;Map&lt;String, Object&gt;&gt; relatorioVendasPorRestaurante(LocalDate dataInicio, LocalDate dataFim) {
+        // Implementação simplificada - você pode usar queries nativas ou JPQL
+<span class="nc" id="L26">        return List.of(</span>
+<span class="nc" id="L27">            Map.of(&quot;restaurante&quot;, &quot;Restaurante A&quot;, &quot;totalVendas&quot;, new BigDecimal(&quot;1500.00&quot;), &quot;quantidadePedidos&quot;, 25),</span>
+<span class="nc" id="L28">            Map.of(&quot;restaurante&quot;, &quot;Restaurante B&quot;, &quot;totalVendas&quot;, new BigDecimal(&quot;1200.00&quot;), &quot;quantidadePedidos&quot;, 18)</span>
+        );
+    }
+
+    @Override
+    public List&lt;Map&lt;String, Object&gt;&gt; relatorioProdutosMaisVendidos(int limite, LocalDate dataInicio, LocalDate dataFim) {
+<span class="nc" id="L34">        return List.of(</span>
+<span class="nc" id="L35">            Map.of(&quot;produto&quot;, &quot;Pizza Margherita&quot;, &quot;quantidadeVendida&quot;, 50, &quot;totalArrecadado&quot;, new BigDecimal(&quot;1000.00&quot;)),</span>
+<span class="nc" id="L36">            Map.of(&quot;produto&quot;, &quot;Hambúrguer&quot;, &quot;quantidadeVendida&quot;, 35, &quot;totalArrecadado&quot;, new BigDecimal(&quot;700.00&quot;))</span>
+        );
+    }
+
+    @Override
+    public List&lt;Map&lt;String, Object&gt;&gt; relatorioClientesAtivos(int limite, LocalDate dataInicio, LocalDate dataFim) {
+<span class="nc" id="L42">        return List.of(</span>
+<span class="nc" id="L43">            Map.of(&quot;cliente&quot;, &quot;João Silva&quot;, &quot;quantidadePedidos&quot;, 12, &quot;totalGasto&quot;, new BigDecimal(&quot;600.00&quot;)),</span>
+<span class="nc" id="L44">            Map.of(&quot;cliente&quot;, &quot;Maria Santos&quot;, &quot;quantidadePedidos&quot;, 8, &quot;totalGasto&quot;, new BigDecimal(&quot;450.00&quot;))</span>
+        );
+    }
+
+    @Override
+    public Map&lt;String, Object&gt; relatorioPedidosPorPeriodo(LocalDate dataInicio, LocalDate dataFim, String agrupamento) {
+<span class="nc" id="L50">        return Map.of(</span>
+            &quot;periodo&quot;, dataInicio + &quot; até &quot; + dataFim,
+<span class="nc" id="L52">            &quot;totalPedidos&quot;, 150,</span>
+            &quot;valorTotal&quot;, new BigDecimal(&quot;7500.00&quot;),
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            &quot;agrupamento&quot;, agrupamento != null ? agrupamento : &quot;total&quot;</span>
+        );
+    }
+
+    @Override
+    public Map&lt;String, Object&gt; resumoVendas(LocalDate dataInicio, LocalDate dataFim) {
+<span class="nc" id="L60">        return Map.of(</span>
+<span class="nc" id="L61">            &quot;totalPedidos&quot;, 150,</span>
+            &quot;valorTotalVendas&quot;, new BigDecimal(&quot;7500.00&quot;),
+            &quot;ticketMedio&quot;, new BigDecimal(&quot;50.00&quot;),
+<span class="nc" id="L64">            &quot;restaurantesAtivos&quot;, 5,</span>
+<span class="nc" id="L65">            &quot;clientesAtivos&quot;, 45</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

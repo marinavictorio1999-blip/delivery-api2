@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PedidoRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.dto.request</a> &gt; <span class="el_source">PedidoRequest.java</span></div><h1>PedidoRequest.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.dto.request;
+
+import lombok.*;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+import java.util.List;
+
+<span class="nc bnc" id="L12" title="All 46 branches missed.">@Data</span>
+<span class="nc" id="L13">@Builder</span>
+<span class="nc" id="L14">@NoArgsConstructor</span>
+<span class="nc" id="L15">@AllArgsConstructor</span>
+public class PedidoRequest {
+    
+    @NotNull(message = &quot;ID do cliente é obrigatório&quot;)
+<span class="nc" id="L19">    private Long clienteId;</span>
+    
+    @NotNull(message = &quot;ID do restaurante é obrigatório&quot;)
+<span class="nc" id="L22">    private Long restauranteId;</span>
+    
+    @NotEmpty(message = &quot;O pedido deve conter pelo menos um item&quot;)
+    @Valid
+<span class="nc" id="L26">    private List&lt;ItemPedidoRequest&gt; itens;</span>
+    
+    @Size(max = 200, message = &quot;Observação não pode ter mais de 200 caracteres&quot;)
+<span class="nc" id="L29">    private String observacao;</span>
+    
+    @NotNull(message = &quot;Endereço de entrega é obrigatório&quot;)
+    @Size(min = 5, max = 200, message = &quot;Endereço deve ter entre 5 e 200 caracteres&quot;)
+<span class="nc" id="L33">    private String enderecoEntrega;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

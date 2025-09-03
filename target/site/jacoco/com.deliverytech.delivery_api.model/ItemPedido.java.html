@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemPedido.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.model</a> &gt; <span class="el_source">ItemPedido.java</span></div><h1>ItemPedido.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+<span class="nc bnc" id="L13" title="All 62 branches missed.">@Data</span>
+<span class="fc" id="L14">@NoArgsConstructor</span>
+<span class="nc" id="L15">@AllArgsConstructor</span>
+<span class="nc" id="L16">@Builder</span>
+public class ItemPedido {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L21">    private Long id;</span>
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;pedido_id&quot;)
+    @JsonIgnore
+<span class="nc" id="L26">    private Pedido pedido;</span>
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;produto_id&quot;)
+<span class="nc" id="L30">    private Produto produto;</span>
+    
+<span class="nc" id="L32">    private Integer quantidade;</span>
+    
+<span class="nc" id="L34">    private BigDecimal precoUnitario;</span>
+    
+<span class="nc" id="L36">    private BigDecimal subtotal;</span>
+    
+<span class="nc" id="L38">    private String observacao;</span>
+    
+    // Método para calcular o subtotal
+    @PrePersist
+    @PreUpdate
+    public void calcularSubtotal() {
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        if (quantidade != null &amp;&amp; precoUnitario != null) {</span>
+<span class="nc" id="L45">            this.subtotal = precoUnitario.multiply(BigDecimal.valueOf(quantidade));</span>
+        }
+<span class="nc" id="L47">    }</span>
+    
+    // Método para inicializar o preço unitário a partir do produto
+    public void inicializarPrecoUnitario() {
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        if (produto != null &amp;&amp; produto.getPreco() != null) {</span>
+<span class="nc" id="L52">            this.precoUnitario = produto.getPreco();</span>
+        }
+<span class="nc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

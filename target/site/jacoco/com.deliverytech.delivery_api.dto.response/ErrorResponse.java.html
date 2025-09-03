@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ErrorResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.dto.response</a> &gt; <span class="el_source">ErrorResponse.java</span></div><h1>ErrorResponse.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.dto.response;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+@Schema(
+    description = &quot;Resposta de erro padronizada com a RFC 7807&quot;,
+    title = &quot;Resposta de erro padronizada&quot;)
+<span class="nc bnc" id="L15" title="All 48 branches missed.">@Data</span>
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ErrorResponse {
+
+    @Schema(description = &quot;Data e hora do erro&quot;, example = &quot;2025-07-14T21:41:27&quot;)
+    @JsonFormat(pattern = &quot;yyyy-MM-dd'T'HH:mm:ss&quot;)
+<span class="nc" id="L21">    private final LocalDateTime timestamp;</span>
+
+    @Schema(description = &quot;Código HTTP do erro&quot;, example = &quot;400&quot;)
+<span class="nc" id="L24">    private final int status;</span>
+
+    @Schema(description = &quot;Tipo do erro&quot;)
+<span class="nc" id="L27">    private final String error;</span>
+
+    @Schema(description = &quot;Mensagem explicando o erro&quot;)
+<span class="nc" id="L30">    private final String message;</span>
+
+    @Schema(description = &quot;Caminho da requisição&quot;)
+<span class="nc" id="L33">    private final String path;</span>
+
+    @Schema(description = &quot;Detalhes adicionais&quot;)
+<span class="nc" id="L36">    private final Map&lt;String, String&gt; details;</span>
+
+    public ErrorResponse(int status, String error, String message, String path,
+<span class="nc" id="L39">            Map&lt;String, String&gt; details) {</span>
+<span class="nc" id="L40">        this.timestamp = LocalDateTime.now();</span>
+<span class="nc" id="L41">        this.status = status;</span>
+<span class="nc" id="L42">        this.error = error;</span>
+<span class="nc" id="L43">        this.message = message;</span>
+<span class="nc" id="L44">        this.path = path;</span>
+<span class="nc" id="L45">        this.details = details;</span>
+<span class="nc" id="L46">    }</span>
+
+    public ErrorResponse(int status, String error, String message, String path) {
+<span class="nc" id="L49">        this(status, error, message, path, null);</span>
+<span class="nc" id="L50">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

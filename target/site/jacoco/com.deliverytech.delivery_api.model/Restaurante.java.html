@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Restaurante.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.model</a> &gt; <span class="el_source">Restaurante.java</span></div><h1>Restaurante.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.model;
+
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+<span class="pc bnc" id="L13" title="All 118 branches missed.">@Data</span>
+<span class="fc" id="L14">@NoArgsConstructor</span>
+<span class="nc" id="L15">@AllArgsConstructor</span>
+<span class="pc bnc" id="L16" title="All 4 branches missed.">@Builder</span>
+public class Restaurante {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L21">    private Long id;</span>
+
+<span class="fc" id="L23">    private String nome;</span>
+
+    @Column(unique = true)
+<span class="nc" id="L26">    private String cnpj;</span>
+
+<span class="nc" id="L28">    private String endereco;</span>
+<span class="nc" id="L29">    private String telefone;</span>
+<span class="nc" id="L30">    private String especialidade;</span>
+<span class="nc" id="L31">    private String categoria;</span>
+<span class="nc" id="L32">    private BigDecimal TaxaEntrega;</span>
+
+    @Column(length = 1000)
+<span class="nc" id="L35">    private String descricao;</span>
+
+    @Column(nullable = true)
+<span class="nc" id="L38">    private String horarioFuncionamento;</span>
+
+    @Builder.Default
+<span class="pc" id="L41">    private Boolean ativo = true;</span>
+
+
+
+    @Builder.Default
+<span class="pc" id="L46">    private LocalDateTime dataCadastro = LocalDateTime.now();</span>
+
+<span class="pc" id="L48">    @OneToMany(mappedBy = &quot;restaurante&quot;, cascade = CascadeType.ALL)</span>
+    @JsonIgnore
+<span class="nc" id="L50">    private List&lt;Produto&gt; produtos = new ArrayList&lt;&gt;();</span>
+
+    // Relacionamento com Pedidos
+<span class="pc" id="L53">    @OneToMany(mappedBy = &quot;restaurante&quot;)</span>
+    @JsonIgnore
+<span class="nc" id="L55">    private List&lt;Pedido&gt; pedidos = new ArrayList&lt;&gt;();</span>
+
+    // Método auxiliar para inativar restaurante
+    @JsonIgnore
+    public void inativar() {
+<span class="nc" id="L60">        this.ativo = false;</span>
+<span class="nc" id="L61">    }</span>
+    
+    // Método auxiliar para adicionar produto
+    @JsonIgnore
+    public void adicionarProduto(Produto produto) {
+<span class="nc" id="L66">        produtos.add(produto);</span>
+<span class="nc" id="L67">        produto.setRestaurante(this);</span>
+<span class="nc" id="L68">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

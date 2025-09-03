@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PedidoServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">PedidoServiceImpl.java</span></div><h1>PedidoServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.dto.request.PedidoRequest;
+import com.deliverytech.delivery_api.model.Pedido;
+import com.deliverytech.delivery_api.model.Produto;
+import com.deliverytech.delivery_api.model.StatusPedido;
+import com.deliverytech.delivery_api.repository.PedidoRepository;
+import com.deliverytech.delivery_api.service.PedidoService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
+@Service
+<span class="fc" id="L17">@RequiredArgsConstructor</span>
+public class PedidoServiceImpl implements PedidoService {
+
+    private final PedidoRepository pedidoRepository;
+
+    @Override
+    public Pedido realizar(PedidoRequest pedidoRequest) {
+        // lógica de criação de pedido
+<span class="nc" id="L25">        return new Pedido();</span>
+    }
+
+    @Override
+    public Optional&lt;Pedido&gt; buscarPorId(Long id) {
+<span class="nc" id="L30">        return pedidoRepository.findById(id);</span>
+    }
+
+    @Override
+    public Optional&lt;Pedido&gt; buscarPorIdComItens(Long id) {
+        // lógica de buscar com itens
+<span class="nc" id="L36">        return Optional.empty();</span>
+    }
+
+    @Override
+    public List&lt;Pedido&gt; listarPorCliente(Long clienteId) {
+<span class="nc" id="L41">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public List&lt;Pedido&gt; listarPorRestaurante(Long restauranteId) {
+<span class="nc" id="L46">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public List&lt;Pedido&gt; listarPorStatus(StatusPedido status) {
+<span class="nc" id="L51">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public List&lt;Pedido&gt; listarPorRestauranteEStatus(Long restauranteId, StatusPedido status) {
+<span class="nc" id="L56">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public Pedido atualizarStatus(Long id, StatusPedido novoStatus) {
+<span class="nc" id="L61">        return new Pedido();</span>
+    }
+
+    @Override
+<span class="nc" id="L65">    public Pedido confirmar(Long id) { return new Pedido(); }</span>
+    @Override
+<span class="nc" id="L67">    public Pedido iniciarPreparo(Long id) { return new Pedido(); }</span>
+    @Override
+<span class="nc" id="L69">    public Pedido finalizarPreparo(Long id) { return new Pedido(); }</span>
+    @Override
+<span class="nc" id="L71">    public Pedido iniciarEntrega(Long id) { return new Pedido(); }</span>
+    @Override
+<span class="nc" id="L73">    public Pedido finalizarEntrega(Long id) { return new Pedido(); }</span>
+    @Override
+<span class="nc" id="L75">    public Pedido cancelar(Long id) { return new Pedido(); }</span>
+
+    @Override
+    public List&lt;Pedido&gt; listarPorPeriodo(Long restauranteId, LocalDateTime inicio, LocalDateTime fim) {
+<span class="nc" id="L79">        return new ArrayList&lt;&gt;();</span>
+    }
+
+    @Override
+    public Map&lt;String, Object&gt; obterEstatisticas(Long restauranteId, LocalDateTime inicio, LocalDateTime fim) {
+<span class="nc" id="L84">        return new HashMap&lt;&gt;();</span>
+    }
+
+    @Override
+    public List&lt;Produto&gt; listarTodos() {
+<span class="nc" id="L89">        return new ArrayList&lt;&gt;();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

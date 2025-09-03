@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionMessage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.exception</a> &gt; <span class="el_source">ExceptionMessage.java</span></div><h1>ExceptionMessage.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.exception;
+
+<span class="nc" id="L3">public class ExceptionMessage {</span>
+
+  // É obrigatório
+  public static final String EmailObrigatorio = &quot;O e-mail é obrigatório.&quot;;
+  public static final String NomeObrigatorio = &quot;O nome é obrigatório.&quot;;
+  public static final String TelefoneObrigatorio = &quot;O telefone é obrigatório.&quot;;
+  public static final String TelefoneInvalido = &quot;O telefone deve ser um número válido com 10 a 15 dígitos, podendo iniciar com '+'.&quot;;
+  public static final String EnderecoObrigatorio = &quot;O endereço é obrigatório.&quot;;
+  public static final String CategoriaObrigatoria = &quot;A categoria é obrigatória.&quot;;
+  public static final String DescricaoObrigatoria = &quot;A descrição é obrigatória.&quot;;
+  public static final String NumeroPedidoObrigatorio = &quot;O número do pedido é obrigatório.&quot;;
+  public static final String ItensPedidoObrigatorios = &quot;Os itens são obrigatórios.&quot;;
+  public static final String RestauranteObrigatorio = &quot;O restaurante é obrigatório.&quot;;
+  public static final String ClienteObrigatorio = &quot;O cliente é obrigatório.&quot;;
+  public static final String DataPedidoObrigatoria = &quot;A data do pedido é obrigatória.&quot;;
+  public static final String QuantidadeObrigatoria = &quot;A quantidade é obrigatória.&quot;;
+  public static final String ProdutoObrigatorio = &quot;O produto é obrigatório.&quot;;
+  public static final String DisponibilidadeProdutoObrigatoria = &quot;A disponibilidade do produto é obrigatória.&quot;;
+  public static final String TaxaEntregaObrigatoria = &quot;A taxa de entrega é obrigatória.&quot;;
+  public static final String StatusObrigatorio = &quot;O status é obrigatório.&quot;;
+  
+  // Inválido
+  public static final String EmailInvalido = &quot;O e-mail informado é inválido.&quot;;
+  public static final String RestauranteInvalido = &quot;O restaurante informado é inválido.&quot;;
+  public static final String TransicaoStatusPedidoInvalida = &quot;Transição de status inválida para o pedido.&quot;;
+
+  // Já cadastrado
+  public static final String EmailJaCadastrado = &quot;E-mail já cadastrado.&quot;;
+  public static final String RestauranteJaCadastrado = &quot;Restaurante já cadastrado.&quot;;
+
+  // Não encontrado
+  public static final String ClienteNaoEncontrado = &quot;Cliente não encontrado.&quot;;
+  public static final String RestauranteNaoEncontrado = &quot;Restaurante não encontrado.&quot;;
+  public static final String ProdutoNaoEncontrado = &quot;Produto não encontrado.&quot;;
+  public static final String PedidoNaoEncontrado = &quot;Pedido não encontrado.&quot;;
+  public static final String PedidosNaoEncontradosParaCliente = &quot;Nenhum pedido encontrado para o cliente informado.&quot;;
+  public static final String NenhumProdutoEncontrado = &quot;Nenhum produto encontrado.&quot;;
+  public static final String ProdutosNaoEncontradosParaRestaurante = &quot;Nenhum produto encontrado para o restaurante informado.&quot;;
+  public static final String ProdutosNaoEncontradosParaCategoria = &quot;Nenhum produto encontrado para a categoria informado.&quot;;
+  public static final String ProdutosNaoEncontradosParaPrecoMenor = &quot;Nenhum produto encontrado com preço menor ou igual a: R$ {0}.&quot;;
+  public static final String ProdutosNaoEncontradosParaFaixaPreco = &quot;Nenhum produto encontrado na faixa de preço: R$ {0} a R$ {1}.&quot;;
+  public static final String NenhumRestauranteEncontrado = &quot;Nenhum restaurante encontrado.&quot;;
+  public static final String RestaurantesNaoEncontradosParaCategoria = &quot;Nenhum restaurante encontrado para a categoria informado.&quot;;
+  public static final String RestaurantesNaoEncontradosParaFaixaPreco = &quot;Nenhum restaurante encontrado na faixa de preço: R$ {0} a R$ {1}.&quot;;
+  public static final String RestauranteNaoEncontradosParaPrecoMenor = &quot;Nenhum restaurante encontrado com preço menor ou igual a: R$ {0}.&quot;;
+  public static final String NenhumaVendaEncontrada = &quot;Nenhum dado de vendas encontrado.&quot;;
+  public static final String NenhumPedidoEncontrado = &quot;Nenhum pedido encontrado.&quot;;
+  
+  // Inativo
+  public static final String ClienteInativo = &quot;O cliente está inativo.&quot;;
+  public static final String RestauranteInativo = &quot;O restaurante está inativo.&quot;;
+
+  // Disponivel
+  public static final String RestauranteNaoDisponivel = &quot;O restaurante não está disponível.&quot;;
+
+  // Outros
+  public static final String PrecoDeveSerMaiorQueZero = &quot;O preço deve ser maior que zero.&quot;;
+  public static final String ProdutoNaoPertenceAoRestaurante = &quot;O produto não pertence ao restaurante selecionado.&quot;;
+  public static final String ProdutoNaoDisponivel = &quot;O produto não está disponível.&quot;;
+  public static final String PedidoNaoPodeSerCancelado = &quot;O pedido não pode ser cancelado,  status atual: &quot;;
+  public static final String QuantidadeMaiorQueZero = &quot;A quantidade deve ser pelo menos 1.&quot;;
+  public static final String QuantidadeMenorQueCem = &quot;A quantidade não pode ser maior que 100.&quot;;
+  public static final String PedidoJaCancelado = &quot;O pedido já está cancelado.&quot;;
+  public static final String RestauranteJaInativo = &quot;Restaurante já está inativo.&quot;;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

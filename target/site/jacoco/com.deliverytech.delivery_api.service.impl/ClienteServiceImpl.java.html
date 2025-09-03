@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">ClienteServiceImpl.java</span></div><h1>ClienteServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.model.Cliente;
+import com.deliverytech.delivery_api.dto.request.ClienteRequest; // ADICIONAR IMPORT
+import com.deliverytech.delivery_api.repository.ClienteRepository;
+import com.deliverytech.delivery_api.service.ClienteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+<span class="fc" id="L15">@Slf4j</span>
+@Service
+@Transactional
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
+public class ClienteServiceImpl implements ClienteService {
+
+    private final ClienteRepository clienteRepository;
+
+    /**
+         * Cadastrar novo cliente com validações completas
+         */
+        @Override
+        public Cliente cadastrar(ClienteRequest clienteRequest) {
+<span class="nc" id="L28">            log.info(&quot;Iniciando cadastro de cliente: {}&quot;, clienteRequest.getEmail());</span>
+            
+            // Converter ClienteRequest para Cliente
+<span class="nc" id="L31">            Cliente cliente = new Cliente();</span>
+<span class="nc" id="L32">            cliente.setNome(clienteRequest.getNome());</span>
+<span class="nc" id="L33">            cliente.setEmail(clienteRequest.getEmail());</span>
+<span class="nc" id="L34">            cliente.setTelefone(clienteRequest.getTelefone());</span>
+<span class="nc" id="L35">            cliente.setEndereco(clienteRequest.getEndereco()); // &lt;-----</span>
+            
+            // Validar email único
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            if (clienteRepository.existsByEmail(cliente.getEmail())) {</span>
+<span class="nc" id="L39">                throw new IllegalArgumentException(&quot;Email já cadastrado: &quot; + cliente.getEmail());</span>
+            }
+    
+            // Validações de negócio
+<span class="nc" id="L43">            validarDadosCliente(cliente);</span>
+    
+            // Definir como ativo por padrão
+<span class="nc" id="L46">            cliente.setAtivo(true);</span>
+    
+<span class="nc" id="L48">            Cliente clienteSalvo = clienteRepository.save(cliente);</span>
+<span class="nc" id="L49">            log.info(&quot;Cliente cadastrado com sucesso - ID: {}&quot;, clienteSalvo.getId());</span>
+            
+<span class="nc" id="L51">            return clienteSalvo;</span>
+        }
+    
+        /**
+         * Método auxiliar para cadastrar cliente a partir de uma entidade Cliente.
+         */
+
+    /**
+     * Buscar cliente por ID
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Cliente&gt; buscarPorId(Long id) {
+<span class="nc" id="L64">        log.debug(&quot;Buscando cliente por ID: {}&quot;, id);</span>
+<span class="nc" id="L65">        return clienteRepository.findById(id);</span>
+    }
+
+    /**
+     * Buscar cliente por email
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Cliente&gt; buscarPorEmail(String email) {
+<span class="nc" id="L74">        log.debug(&quot;Buscando cliente por email: {}&quot;, email);</span>
+<span class="nc" id="L75">        return clienteRepository.findByEmail(email);</span>
+    }
+
+    /**
+     * Listar todos os clientes ativos
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Cliente&gt; listarAtivos() {
+<span class="nc" id="L84">        log.debug(&quot;Listando clientes ativos&quot;);</span>
+<span class="nc" id="L85">        return clienteRepository.findByAtivoTrue();</span>
+    }
+
+    /**
+     * Buscar clientes por nome
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Cliente&gt; buscarPorNome(String nome) {
+<span class="nc" id="L94">        log.debug(&quot;Buscando clientes por nome: {}&quot;, nome);</span>
+<span class="nc" id="L95">        return clienteRepository.findByNomeContainingIgnoreCase(nome);</span>
+    }
+
+    /**
+     * Atualizar dados do cliente COM TODAS AS VALIDAÇÕES
+     */
+    @Override
+    public Cliente atualizar(Long id, ClienteRequest clienteRequest) { // CORRIGIR: Cliente → ClienteRequest
+<span class="nc" id="L103">        log.info(&quot;Atualizando cliente ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L105">        Cliente cliente = buscarPorId(id)</span>
+<span class="nc" id="L106">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Cliente não encontrado: &quot; + id));</span>
+
+        // Verificar se email não está sendo usado por outro cliente
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (!cliente.getEmail().equals(clienteRequest.getEmail()) &amp;&amp; // CORRIGIR: clienteAtualizado → clienteRequest</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            clienteRepository.existsByEmail(clienteRequest.getEmail())) { // CORRIGIR</span>
+<span class="nc" id="L111">            throw new IllegalArgumentException(&quot;Email já cadastrado: &quot; + clienteRequest.getEmail()); // CORRIGIR</span>
+        }
+
+        // Criar cliente temporário para validação
+<span class="nc" id="L115">        Cliente clienteParaValidacao = new Cliente();</span>
+<span class="nc" id="L116">        clienteParaValidacao.setNome(clienteRequest.getNome());</span>
+<span class="nc" id="L117">        clienteParaValidacao.setEmail(clienteRequest.getEmail());</span>
+<span class="nc" id="L118">        clienteParaValidacao.setTelefone(clienteRequest.getTelefone());</span>
+<span class="nc" id="L119">        clienteParaValidacao.setEndereco(clienteRequest.getEndereco());</span>
+
+        // Validar dados atualizados
+<span class="nc" id="L122">        validarDadosCliente(clienteParaValidacao);</span>
+
+        // Atualizar campos
+<span class="nc" id="L125">        cliente.setNome(clienteRequest.getNome()); // CORRIGIR</span>
+<span class="nc" id="L126">        cliente.setEmail(clienteRequest.getEmail()); // CORRIGIR</span>
+<span class="nc" id="L127">        cliente.setTelefone(clienteRequest.getTelefone()); // CORRIGIR</span>
+<span class="nc" id="L128">        cliente.setEndereco(clienteRequest.getEndereco()); // CORRIGIR</span>
+
+<span class="nc" id="L130">        Cliente clienteSalvo = clienteRepository.save(cliente);</span>
+<span class="nc" id="L131">        log.info(&quot;Cliente atualizado com sucesso - ID: {}&quot;, clienteSalvo.getId());</span>
+        
+<span class="nc" id="L133">        return clienteSalvo;</span>
+    }
+
+    /**
+     * Inativar cliente (soft delete) COM VALIDAÇÃO
+     */
+    @Override
+    public void inativar(Long id) {
+<span class="nc" id="L141">        log.info(&quot;Inativando cliente ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L143">        Cliente cliente = buscarPorId(id)</span>
+<span class="nc" id="L144">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Cliente não encontrado: &quot; + id));</span>
+
+        // Verificar se cliente já está inativo
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (!cliente.getAtivo()) {</span>
+<span class="nc" id="L148">            throw new IllegalArgumentException(&quot;Cliente já está inativo: &quot; + id);</span>
+        }
+
+        // Usar método da entidade se disponível, senão usar setter
+        try {
+<span class="nc" id="L153">            cliente.inativar();</span>
+<span class="nc" id="L154">        } catch (Exception e) {</span>
+<span class="nc" id="L155">            cliente.setAtivo(false);</span>
+<span class="nc" id="L156">        }</span>
+        
+<span class="nc" id="L158">        clienteRepository.save(cliente);</span>
+<span class="nc" id="L159">        log.info(&quot;Cliente inativado com sucesso - ID: {}&quot;, id);</span>
+<span class="nc" id="L160">    }</span>
+
+    /**
+     * Ativar/Desativar cliente (toggle status ativo)
+     * NOVO MÉTODO para atender requisito da atividade
+     */
+    @Override
+    public Cliente ativarDesativarCliente(Long id) {
+<span class="nc" id="L168">        log.info(&quot;Alterando status do cliente ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L170">        Cliente cliente = buscarPorId(id)</span>
+<span class="nc" id="L171">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Cliente não encontrado: &quot; + id));</span>
+
+        // Toggle do status
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        cliente.setAtivo(!cliente.getAtivo());</span>
+        
+<span class="nc" id="L176">        Cliente clienteSalvo = clienteRepository.save(cliente);</span>
+<span class="nc" id="L177">        log.info(&quot;Status do cliente alterado para: {} - ID: {}&quot;, clienteSalvo.getAtivo(), id);</span>
+        
+<span class="nc" id="L179">        return clienteSalvo;</span>
+    }
+
+    /**
+     * VALIDAÇÕES DE NEGÓCIO COMPLETAS (método privado)
+     */
+    private void validarDadosCliente(Cliente cliente) {
+<span class="nc bnc" id="L186" title="All 4 branches missed.">        if (cliente.getNome() == null || cliente.getNome().trim().isEmpty()) {</span>
+<span class="nc" id="L187">            throw new IllegalArgumentException(&quot;Nome é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L190" title="All 4 branches missed.">        if (cliente.getEmail() == null || cliente.getEmail().trim().isEmpty()) {</span>
+<span class="nc" id="L191">            throw new IllegalArgumentException(&quot;Email é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (cliente.getNome().length() &lt; 2) {</span>
+<span class="nc" id="L195">            throw new IllegalArgumentException(&quot;Nome deve ter pelo menos 2 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        if (cliente.getNome().length() &gt; 100) {</span>
+<span class="nc" id="L199">            throw new IllegalArgumentException(&quot;Nome não pode ter mais de 100 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L202" title="All 4 branches missed.">        if (!cliente.getEmail().contains(&quot;@&quot;) || !cliente.getEmail().contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L203">            throw new IllegalArgumentException(&quot;Email deve ter formato válido&quot;);</span>
+        }
+
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (cliente.getEmail().length() &gt; 150) {</span>
+<span class="nc" id="L207">            throw new IllegalArgumentException(&quot;Email não pode ter mais de 150 caracteres&quot;);</span>
+        }
+
+<span class="nc" id="L210">        log.debug(&quot;Validações de negócio aprovadas para cliente: {}&quot;, cliente.getEmail());</span>
+<span class="nc" id="L211">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

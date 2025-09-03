@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import com.deliverytech.delivery_api.dto.request.LoginRequest;
+import com.deliverytech.delivery_api.dto.request.RegisterRequest;
+import com.deliverytech.delivery_api.dto.response.LoginResponse;
+import com.deliverytech.delivery_api.dto.response.UserResponse;
+import com.deliverytech.delivery_api.model.Usuario;
+import com.deliverytech.delivery_api.security.JwtUtil;
+import com.deliverytech.delivery_api.service.UsuarioService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@RequestMapping(&quot;/api/auth&quot;)
+@Tag(name = &quot;Autenticação&quot;, description = &quot;Operações relacionadas com autenticação e cadastro de usuários&quot;)
+<span class="fc" id="L31">public class AuthController {</span>
+
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping(value = &quot;/login&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = &quot;Login de usuário&quot;, description = &quot;Realizar o login do usuário&quot;)
+    @ApiResponses({
+    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Login realizado com sucesso&quot;),
+    @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Login inválido&quot;, content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    public ResponseEntity&lt;LoginResponse&gt; login(@RequestBody LoginRequest request) {
+        try {
+            // MUDANÇA: usar username e password em vez de email e senha
+<span class="nc" id="L49">            Authentication authentication = authenticationManager.authenticate(</span>
+<span class="nc" id="L50">                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));</span>
+
+            // Se a autenticação for bem-sucedida, gera um token JWT
+<span class="nc" id="L53">            String username = authentication.getName();</span>
+<span class="nc" id="L54">            String token = jwtUtil.gerarToken(username); // MUDANÇA: usar gerarToken em vez de generateToken</span>
+
+<span class="nc" id="L56">            LoginResponse dto = new LoginResponse(token);</span>
+<span class="nc" id="L57">            return ResponseEntity.ok(dto);</span>
+<span class="nc" id="L58">        } catch (BadCredentialsException e) {</span>
+<span class="nc" id="L59">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
+        }
+    }
+
+    @PostMapping(value = &quot;/register&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = &quot;Registrar um usuário&quot;, description = &quot;Cadastrar um novo usuário na plataforma&quot;)
+    @ApiResponses({
+            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Registro salvo com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Registro inválido&quot;, content = @Content(schema = @Schema(implementation = Void.class))),
+    })
+    public ResponseEntity&lt;UserResponse&gt; register(@RequestBody RegisterRequest request) {
+<span class="nc" id="L70">        Usuario novoUsuario = usuarioService.salvar(request);</span>
+<span class="nc" id="L71">        UserResponse response = UserResponse.fromEntity(novoUsuario);</span>
+<span class="nc" id="L72">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

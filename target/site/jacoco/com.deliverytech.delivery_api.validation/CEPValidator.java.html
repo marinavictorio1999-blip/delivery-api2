@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CEPValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.validation</a> &gt; <span class="el_source">CEPValidator.java</span></div><h1>CEPValidator.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.validation;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+// Implementa a interface para validar a anotação @validCEP
+// Valida strings que representam CEPs (códigos postais)
+<span class="nc" id="L8">public class CEPValidator implements ConstraintValidator&lt;ValidCEP, String&gt; {</span>
+
+    // Método que contém a regra de validação
+    // 'value' é o valor do campo anotado com @validCEP
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+
+        // Se o valor for nulo ou vazio, considera válido
+        // Porque a anotação @NotNull deve ser usada para validar presença
+<span class="nc bnc" id="L17" title="All 4 branches missed.">        if (value == null || value.isEmpty()) {</span>
+<span class="nc" id="L18">            return true;</span>
+        }
+
+        // Valida se o CEP tem o formato &quot;00000-000&quot; ou &quot;00000000&quot;
+        // Usando regex para corresponder a cinco dígitos, hífen, três dígitos 
+        // ou oito dígitos seguidos sem hífen
+<span class="nc bnc" id="L24" title="All 4 branches missed.">        return value.matches(&quot;\\d{5}-\\d{3}&quot;) || value.matches(&quot;\\d{8}&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

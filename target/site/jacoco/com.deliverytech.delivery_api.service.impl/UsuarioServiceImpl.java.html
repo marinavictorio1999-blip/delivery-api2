@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">UsuarioServiceImpl.java</span></div><h1>UsuarioServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.dto.request.LoginRequest;
+import com.deliverytech.delivery_api.dto.request.RegisterRequest;
+import com.deliverytech.delivery_api.dto.response.LoginResponse;
+import com.deliverytech.delivery_api.model.Role;
+import com.deliverytech.delivery_api.model.Usuario;
+import com.deliverytech.delivery_api.repository.UsuarioRepository;
+import com.deliverytech.delivery_api.service.UsuarioService;
+import com.deliverytech.delivery_api.security.JwtUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L24">public class UsuarioServiceImpl implements UsuarioService {</span>
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        try {
+<span class="nc" id="L41">            Authentication authentication = authenticationManager.authenticate(</span>
+                new UsernamePasswordAuthenticationToken(
+<span class="nc" id="L43">                    loginRequest.getUsername(), </span>
+<span class="nc" id="L44">                    loginRequest.getPassword()</span>
+                )
+            );
+
+<span class="nc" id="L48">            String token = jwtUtil.generateToken(authentication.getName());</span>
+            
+<span class="nc" id="L50">            LoginResponse response = new LoginResponse();</span>
+<span class="nc" id="L51">            response.setToken(token);</span>
+<span class="nc" id="L52">            response.setUsername(authentication.getName());</span>
+<span class="nc" id="L53">            response.setMessage(&quot;Login realizado com sucesso&quot;);</span>
+            
+<span class="nc" id="L55">            return response;</span>
+<span class="nc" id="L56">        } catch (Exception e) {</span>
+<span class="nc" id="L57">            throw new RuntimeException(&quot;Credenciais inválidas&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public void logout(String token) {
+        // Implementar lógica de logout se necessário (ex: blacklist)
+<span class="nc" id="L64">    }</span>
+
+    @Override
+    public Object buscarPorId(Long id) {
+<span class="nc" id="L68">        Optional&lt;Usuario&gt; usuario = usuarioRepository.findById(id);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (usuario.isPresent()) {</span>
+<span class="nc" id="L70">            return usuario.get();</span>
+        }
+<span class="nc" id="L72">        throw new RuntimeException(&quot;Usuário não encontrado com id: &quot; + id);</span>
+    }
+
+    @Override
+    public void inativarUsuario(Long id) {
+<span class="nc" id="L77">        Optional&lt;Usuario&gt; usuarioOpt = usuarioRepository.findById(id);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (usuarioOpt.isPresent()) {</span>
+<span class="nc" id="L79">            Usuario usuario = usuarioOpt.get();</span>
+<span class="nc" id="L80">            usuario.setAtivo(false);</span>
+<span class="nc" id="L81">            usuarioRepository.save(usuario);</span>
+<span class="nc" id="L82">        } else {</span>
+<span class="nc" id="L83">            throw new RuntimeException(&quot;Usuário não encontrado com id: &quot; + id);</span>
+        }
+<span class="nc" id="L85">    }</span>
+
+    @Override
+    public boolean existePorEmail(String email) {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        return usuarioRepository.findByEmail(email) != null;</span>
+    }
+
+    @Override
+    public UserDetails buscarPorEmail(String email) {
+<span class="nc" id="L94">        UserDetails usuario = usuarioRepository.findByEmail(email);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L96">            throw new RuntimeException(&quot;Usuário não encontrado: &quot; + email);</span>
+        }
+<span class="nc" id="L98">        return usuario;</span>
+    }
+
+    @Override
+    public Usuario salvar(RegisterRequest registerRequest) {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (existePorEmail(registerRequest.getEmail())) {</span>
+<span class="nc" id="L104">            throw new RuntimeException(&quot;Email já cadastrado: &quot; + registerRequest.getEmail());</span>
+        }
+
+<span class="nc" id="L107">        Usuario usuario = new Usuario();</span>
+        
+<span class="nc" id="L109">        usuario.setNome(registerRequest.getNome());</span>
+<span class="nc" id="L110">        usuario.setEmail(registerRequest.getEmail());</span>
+<span class="nc" id="L111">        usuario.setSenha(passwordEncoder.encode(registerRequest.getSenha()));</span>
+<span class="nc" id="L112">        usuario.setAtivo(true);</span>
+<span class="nc" id="L113">        usuario.setDataCriacao(LocalDateTime.now());</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (registerRequest.getRole() == null) {</span>
+<span class="nc" id="L116">            usuario.setRole(Role.USER); // valor padrão</span>
+        } else {
+<span class="nc" id="L118">            usuario.setRole(registerRequest.getRole());</span>
+        }
+
+<span class="nc" id="L121">        return usuarioRepository.save(usuario);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

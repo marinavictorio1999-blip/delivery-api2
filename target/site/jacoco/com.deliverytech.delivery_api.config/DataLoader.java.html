@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.config</a> &gt; <span class="el_source">DataLoader.java</span></div><h1>DataLoader.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.config;
+
+import com.deliverytech.delivery_api.model.*;
+import com.deliverytech.delivery_api.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
+
+import java.util.Arrays;
+
+
+@Component
+<span class="fc" id="L14">public class DataLoader implements CommandLineRunner {</span>
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private RestauranteRepository restauranteRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    @Override
+    public void run(String... args) throws Exception {
+<span class="fc" id="L30">        System.out.println(&quot;=== INICIANDO CARGA DE DADOS DE TESTE ===&quot;);</span>
+
+        // Inserir dados de teste (sem limpar dados existentes)
+<span class="fc" id="L33">        inserirClientes();</span>
+<span class="fc" id="L34">        inserirRestaurantes();</span>
+
+<span class="fc" id="L36">        System.out.println(&quot;=== CARGA DE DADOS CONCLUÍDA ===&quot;);</span>
+        
+        // ✅ ADICIONAR: Spring Boot iniciada com sucesso + Bender
+<span class="fc" id="L39">        System.out.println(&quot;\n✅ Spring Boot Application iniciada com sucesso!&quot;);</span>
+        
+        
+        // ✅ INFORMAR sobre captura automática
+<span class="fc" id="L43">        System.out.println(&quot;\n🎯 SISTEMA DE CAPTURA AUTOMÁTICA ATIVO!&quot;);</span>
+<span class="fc" id="L44">        System.out.println(&quot;📁 Respostas serão salvas em: ./entregaveis/&quot;);</span>
+<span class="fc" id="L45">        System.out.println(&quot;🔄 Faça requisições para /api/* e veja os arquivos sendo gerados!\n&quot;);</span>
+<span class="fc" id="L46">    }</span>
+
+
+private void inserirClientes() {
+<span class="fc" id="L50">    System.out.println(&quot;--- Inserindo clientes ---&quot;);</span>
+
+<span class="fc" id="L52">    Cliente cliente1 = new Cliente();</span>
+<span class="fc" id="L53">    cliente1.setNome(&quot;João Silva&quot;);</span>
+<span class="fc" id="L54">    cliente1.setEmail(&quot;joao@email.com&quot;);</span>
+<span class="fc" id="L55">    cliente1.setTelefone(&quot;11987654321&quot;);</span>
+<span class="fc" id="L56">    cliente1.setEndereco(&quot;Rua das Flores, 123 - Vila Madalena, São Paulo - SP&quot;);</span>
+<span class="fc" id="L57">    cliente1.setAtivo(true);</span>
+
+<span class="fc" id="L59">    Cliente cliente2 = new Cliente();</span>
+<span class="fc" id="L60">    cliente2.setNome(&quot;Maria Santos&quot;);</span>
+<span class="fc" id="L61">    cliente2.setEmail(&quot;maria@email.com&quot;);</span>
+<span class="fc" id="L62">    cliente2.setTelefone(&quot;11876543210&quot;);</span>
+<span class="fc" id="L63">    cliente2.setEndereco(&quot;Av. Paulista, 456 - Bela Vista, São Paulo - SP&quot;);</span>
+<span class="fc" id="L64">    cliente2.setAtivo(true);</span>
+
+<span class="fc" id="L66">    Cliente cliente3 = new Cliente();</span>
+<span class="fc" id="L67">    cliente3.setNome(&quot;Pedro Oliveira&quot;);</span>
+<span class="fc" id="L68">    cliente3.setEmail(&quot;pedro@email.com&quot;);</span>
+<span class="fc" id="L69">    cliente3.setTelefone(&quot;11765432109&quot;);</span>
+<span class="fc" id="L70">    cliente3.setEndereco(&quot;Rua Augusta, 789 - Consolação, São Paulo - SP&quot;);</span>
+<span class="fc" id="L71">    cliente3.setAtivo(false);</span>
+
+<span class="fc" id="L73">    Cliente cliente4 = new Cliente();</span>
+<span class="fc" id="L74">    cliente4.setNome(&quot;Ana Costa&quot;);</span>
+<span class="fc" id="L75">    cliente4.setEmail(&quot;ana@email.com&quot;);</span>
+<span class="fc" id="L76">    cliente4.setTelefone(&quot;11654321098&quot;);</span>
+<span class="fc" id="L77">    cliente4.setEndereco(&quot;Rua Oscar Freire, 321 - Jardins, São Paulo - SP&quot;);</span>
+<span class="fc" id="L78">    cliente4.setAtivo(true);</span>
+
+<span class="fc" id="L80">    Cliente cliente5 = new Cliente();</span>
+<span class="fc" id="L81">    cliente5.setNome(&quot;Carlos Ferreira&quot;);</span>
+<span class="fc" id="L82">    cliente5.setEmail(&quot;carlos@email.com&quot;);</span>
+<span class="fc" id="L83">    cliente5.setTelefone(&quot;11543210987&quot;);</span>
+<span class="fc" id="L84">    cliente5.setEndereco(&quot;Rua 25 de Março, 654 - Centro, São Paulo - SP&quot;);</span>
+<span class="fc" id="L85">    cliente5.setAtivo(true);</span>
+
+<span class="fc" id="L87">    clienteRepository.saveAll(Arrays.asList(cliente1, cliente2, cliente3, cliente4, cliente5));</span>
+<span class="fc" id="L88">    System.out.println(&quot;✓ 5 clientes inseridos&quot;);</span>
+<span class="fc" id="L89">}</span>
+
+private void inserirRestaurantes() {
+<span class="fc" id="L92">    System.out.println(&quot;--- Inserindo Restaurantes ---&quot;);</span>
+
+<span class="fc" id="L94">    Restaurante restaurante1 = new Restaurante();</span>
+<span class="fc" id="L95">    restaurante1.setNome(&quot;Pizza Express&quot;);</span>
+<span class="fc" id="L96">    restaurante1.setCategoria(&quot;Italiana&quot;);</span>
+<span class="fc" id="L97">    restaurante1.setTelefone(&quot;1133333333&quot;);</span>
+<span class="fc" id="L98">    restaurante1.setTaxaEntrega(new BigDecimal(&quot;3.50&quot;));</span>
+<span class="fc" id="L99">    restaurante1.setAtivo(true);</span>
+
+<span class="fc" id="L101">    Restaurante restaurante2 = new Restaurante();</span>
+<span class="fc" id="L102">    restaurante2.setNome(&quot;Burger King&quot;);</span>
+<span class="fc" id="L103">    restaurante2.setCategoria(&quot;Fast Food&quot;);</span>
+<span class="fc" id="L104">    restaurante2.setTelefone(&quot;1144444444&quot;);</span>
+<span class="fc" id="L105">    restaurante2.setTaxaEntrega(new BigDecimal(&quot;5.00&quot;));</span>
+<span class="fc" id="L106">    restaurante2.setAtivo(true);</span>
+
+<span class="fc" id="L108">    Restaurante restaurante3 = new Restaurante();</span>
+<span class="fc" id="L109">    restaurante3.setNome(&quot;Sushi House&quot;);</span>
+<span class="fc" id="L110">    restaurante3.setCategoria(&quot;Japonesa&quot;);</span>
+<span class="fc" id="L111">    restaurante3.setTelefone(&quot;1155555555&quot;);</span>
+<span class="fc" id="L112">    restaurante3.setTaxaEntrega(new BigDecimal(&quot;4.00&quot;));</span>
+<span class="fc" id="L113">    restaurante3.setAtivo(true);</span>
+
+<span class="fc" id="L115">    Restaurante restaurante4 = new Restaurante();</span>
+<span class="fc" id="L116">    restaurante4.setNome(&quot;Gyros Athenas&quot;);</span>
+<span class="fc" id="L117">    restaurante4.setCategoria(&quot;Grega&quot;);</span>
+<span class="fc" id="L118">    restaurante4.setTelefone(&quot;1166666666&quot;);</span>
+<span class="fc" id="L119">    restaurante4.setTaxaEntrega(new BigDecimal(&quot;6.50&quot;));</span>
+<span class="fc" id="L120">    restaurante4.setAtivo(true);</span>
+
+<span class="fc" id="L122">    Restaurante restaurante5 = new Restaurante();</span>
+<span class="fc" id="L123">    restaurante5.setNome(&quot;Chiparia do Porto&quot;);</span>
+<span class="fc" id="L124">    restaurante5.setCategoria(&quot;Frutos do Mar&quot;);</span>
+<span class="fc" id="L125">    restaurante5.setTelefone(&quot;1177777777&quot;);</span>
+<span class="fc" id="L126">    restaurante5.setTaxaEntrega(new BigDecimal(&quot;7.00&quot;));</span>
+<span class="fc" id="L127">    restaurante5.setAtivo(true);</span>
+
+<span class="fc" id="L129">    restauranteRepository.saveAll(Arrays.asList(restaurante1, restaurante2, restaurante3, restaurante4, restaurante5));</span>
+<span class="fc" id="L130">    System.out.println(&quot;✓ 5 restaurantes inseridos&quot;);</span>
+
+    // Inserir produtos após restaurantes para poder associá-los
+<span class="fc" id="L133">    inserirProdutos();</span>
+<span class="fc" id="L134">}</span>
+
+private void inserirProdutos() {
+<span class="fc" id="L137">    System.out.println(&quot;--- Inserindo Produtos ---&quot;);</span>
+
+    // Buscar restaurantes para associar aos produtos
+<span class="fc" id="L140">    var restaurantes = restauranteRepository.findAll();</span>
+<span class="fc" id="L141">    var pizzaExpress = restaurantes.stream().filter(r -&gt; r.getNome().equals(&quot;Pizza Express&quot;)).findFirst().orElse(null);</span>
+<span class="fc" id="L142">    var burgerKing = restaurantes.stream().filter(r -&gt; r.getNome().equals(&quot;Burger King&quot;)).findFirst().orElse(null);</span>
+<span class="fc" id="L143">    var sushiHouse = restaurantes.stream().filter(r -&gt; r.getNome().equals(&quot;Sushi House&quot;)).findFirst().orElse(null);</span>
+<span class="fc" id="L144">    var gyrosAthenas = restaurantes.stream().filter(r -&gt; r.getNome().equals(&quot;Gyros Athenas&quot;)).findFirst().orElse(null);</span>
+<span class="fc" id="L145">    var chipariaPorto = restaurantes.stream().filter(r -&gt; r.getNome().equals(&quot;Chiparia do Porto&quot;)).findFirst().orElse(null);</span>
+
+<span class="fc" id="L147">    Produto produto1 = new Produto();</span>
+<span class="fc" id="L148">    produto1.setNome(&quot;Pizza Margherita&quot;);</span>
+<span class="fc" id="L149">    produto1.setCategoria(&quot;Pizza&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L150">    produto1.setDescricao(&quot;Pizza clássica com molho de tomate, mussarela e manjericão&quot;);</span>
+<span class="fc" id="L151">    produto1.setPreco(new BigDecimal(&quot;25.90&quot;));</span>
+<span class="fc" id="L152">    produto1.setRestaurante(pizzaExpress);</span>
+<span class="fc" id="L153">    produto1.setAtivo(true);</span>
+
+<span class="fc" id="L155">    Produto produto2 = new Produto();</span>
+<span class="fc" id="L156">    produto2.setNome(&quot;Pizza Pepperoni&quot;);</span>
+<span class="fc" id="L157">    produto2.setCategoria(&quot;Pizza&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L158">    produto2.setDescricao(&quot;Pizza com molho de tomate, mussarela e pepperoni&quot;);</span>
+<span class="fc" id="L159">    produto2.setPreco(new BigDecimal(&quot;29.90&quot;));</span>
+<span class="fc" id="L160">    produto2.setRestaurante(pizzaExpress);</span>
+<span class="fc" id="L161">    produto2.setAtivo(true);</span>
+
+<span class="fc" id="L163">    Produto produto3 = new Produto();</span>
+<span class="fc" id="L164">    produto3.setNome(&quot;Big Burger&quot;);</span>
+<span class="fc" id="L165">    produto3.setCategoria(&quot;Hambúrguer&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L166">    produto3.setDescricao(&quot;Hambúrguer duplo com queijo, alface, tomate e molho especial&quot;);</span>
+<span class="fc" id="L167">    produto3.setPreco(new BigDecimal(&quot;18.50&quot;));</span>
+<span class="fc" id="L168">    produto3.setRestaurante(burgerKing);</span>
+<span class="fc" id="L169">    produto3.setAtivo(true);</span>
+
+<span class="fc" id="L171">    Produto produto4 = new Produto();</span>
+<span class="fc" id="L172">    produto4.setNome(&quot;Batata Frita Grande&quot;);</span>
+<span class="fc" id="L173">    produto4.setCategoria(&quot;Acompanhamento&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L174">    produto4.setDescricao(&quot;Porção grande de batatas fritas crocantes&quot;);</span>
+<span class="fc" id="L175">    produto4.setPreco(new BigDecimal(&quot;8.90&quot;));</span>
+<span class="fc" id="L176">    produto4.setRestaurante(burgerKing);</span>
+<span class="fc" id="L177">    produto4.setAtivo(true);</span>
+
+<span class="fc" id="L179">    Produto produto5 = new Produto();</span>
+<span class="fc" id="L180">    produto5.setNome(&quot;Sushi Salmão&quot;);</span>
+<span class="fc" id="L181">    produto5.setCategoria(&quot;Sushi&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L182">    produto5.setDescricao(&quot;8 peças de sushi de salmão fresco&quot;);</span>
+<span class="fc" id="L183">    produto5.setPreco(new BigDecimal(&quot;32.00&quot;));</span>
+<span class="fc" id="L184">    produto5.setRestaurante(sushiHouse);</span>
+<span class="fc" id="L185">    produto5.setAtivo(true);</span>
+
+<span class="fc" id="L187">    Produto produto6 = new Produto();</span>
+<span class="fc" id="L188">    produto6.setNome(&quot;Hot Roll&quot;);</span>
+<span class="fc" id="L189">    produto6.setCategoria(&quot;Sushi&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L190">    produto6.setDescricao(&quot;8 peças de hot roll empanado com salmão&quot;);</span>
+<span class="fc" id="L191">    produto6.setPreco(new BigDecimal(&quot;28.50&quot;));</span>
+<span class="fc" id="L192">    produto6.setRestaurante(sushiHouse);</span>
+<span class="fc" id="L193">    produto6.setAtivo(true);</span>
+
+<span class="fc" id="L195">    Produto produto7 = new Produto();</span>
+<span class="fc" id="L196">    produto7.setNome(&quot;Gyros de Cordeiro&quot;);</span>
+<span class="fc" id="L197">    produto7.setCategoria(&quot;Espeto&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L198">    produto7.setDescricao(&quot;Espeto de cordeiro grelhado com molho tzatziki, tomate e cebola roxa&quot;);</span>
+<span class="fc" id="L199">    produto7.setPreco(new BigDecimal(&quot;35.90&quot;));</span>
+<span class="fc" id="L200">    produto7.setRestaurante(gyrosAthenas);</span>
+<span class="fc" id="L201">    produto7.setAtivo(true);</span>
+
+<span class="fc" id="L203">    Produto produto8 = new Produto();</span>
+<span class="fc" id="L204">    produto8.setNome(&quot;Souvlaki de Frango&quot;);</span>
+<span class="fc" id="L205">    produto8.setCategoria(&quot;Espeto&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L206">    produto8.setDescricao(&quot;Espetinho de frango marinado com ervas gregas e batata frita&quot;);</span>
+<span class="fc" id="L207">    produto8.setPreco(new BigDecimal(&quot;28.50&quot;));</span>
+<span class="fc" id="L208">    produto8.setRestaurante(gyrosAthenas);</span>
+<span class="fc" id="L209">    produto8.setAtivo(true);</span>
+
+<span class="fc" id="L211">    Produto produto9 = new Produto();</span>
+<span class="fc" id="L212">    produto9.setNome(&quot;Fish &amp; Chips Tradicional&quot;);</span>
+<span class="fc" id="L213">    produto9.setCategoria(&quot;Peixe&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L214">    produto9.setDescricao(&quot;Filé de bacalhau empanado com batatas fritas e molho tártaro&quot;);</span>
+<span class="fc" id="L215">    produto9.setPreco(new BigDecimal(&quot;42.90&quot;));</span>
+<span class="fc" id="L216">    produto9.setRestaurante(chipariaPorto);</span>
+<span class="fc" id="L217">    produto9.setAtivo(true);</span>
+
+<span class="fc" id="L219">    Produto produto10 = new Produto();</span>
+<span class="fc" id="L220">    produto10.setNome(&quot;Porção de Camarão Empanado&quot;);</span>
+<span class="fc" id="L221">    produto10.setCategoria(&quot;Frutos do Mar&quot;); // ← ADICIONADO</span>
+<span class="fc" id="L222">    produto10.setDescricao(&quot;500g de camarão empanado com molho agridoce&quot;);</span>
+<span class="fc" id="L223">    produto10.setPreco(new BigDecimal(&quot;52.00&quot;));</span>
+<span class="fc" id="L224">    produto10.setRestaurante(chipariaPorto);</span>
+<span class="fc" id="L225">    produto10.setAtivo(true);</span>
+
+<span class="fc" id="L227">    produtoRepository.saveAll(Arrays.asList(</span>
+        produto1, produto2, produto3, produto4, produto5, 
+        produto6, produto7, produto8, produto9, produto10
+    ));
+<span class="fc" id="L231">    System.out.println(&quot;✓ 10 produtos inseridos&quot;);</span>
+<span class="fc" id="L232">}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

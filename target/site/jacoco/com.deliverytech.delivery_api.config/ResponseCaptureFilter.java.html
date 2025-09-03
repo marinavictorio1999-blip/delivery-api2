@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResponseCaptureFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.config</a> &gt; <span class="el_source">ResponseCaptureFilter.java</span></div><h1>ResponseCaptureFilter.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class ResponseCaptureFilter implements Filter {
+
+    private final ObjectMapper objectMapper;
+
+<span class="fc" id="L21">    public ResponseCaptureFilter() {</span>
+<span class="fc" id="L22">        this.objectMapper = new ObjectMapper();</span>
+<span class="fc" id="L23">        this.objectMapper.registerModule(new JavaTimeModule());</span>
+<span class="fc" id="L24">    }</span>
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+<span class="nc" id="L30">        HttpServletRequest httpRequest = (HttpServletRequest) request;</span>
+<span class="nc" id="L31">        HttpServletResponse httpResponse = (HttpServletResponse) response;</span>
+
+        // ✅ Só processar APIs (não arquivos estáticos)
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (!httpRequest.getRequestURI().startsWith(&quot;/api/&quot;)) {</span>
+<span class="nc" id="L35">            chain.doFilter(request, response);</span>
+<span class="nc" id="L36">            return;</span>
+        }
+
+        // ✅ Wrapper para capturar request e response
+<span class="nc" id="L40">        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(httpRequest);</span>
+<span class="nc" id="L41">        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpResponse);</span>
+
+        try {
+            // ✅ Executar a requisição
+<span class="nc" id="L45">            chain.doFilter(requestWrapper, responseWrapper);</span>
+
+            // ✅ Capturar e salvar a resposta
+<span class="nc" id="L48">            capturarResposta(requestWrapper, responseWrapper);</span>
+
+        } finally {
+            // ✅ IMPORTANTE: Copiar response de volta para o cliente
+<span class="nc" id="L52">            responseWrapper.copyBodyToResponse();</span>
+        }
+<span class="nc" id="L54">    }</span>
+
+    private void capturarResposta(ContentCachingRequestWrapper request,
+                                 ContentCachingResponseWrapper response) {
+        try {
+            // ✅ Criar diretório se não existir
+<span class="nc" id="L60">            File dir = new File(&quot;entregaveis&quot;);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if (!dir.exists()) {</span>
+<span class="nc" id="L62">                dir.mkdirs();</span>
+            }
+
+            // ✅ Gerar nome do arquivo
+<span class="nc" id="L66">            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyyMMdd_HHmmss&quot;));</span>
+<span class="nc" id="L67">            String method = request.getMethod();</span>
+<span class="nc" id="L68">            String endpoint = request.getRequestURI()</span>
+<span class="nc" id="L69">                    .replace(&quot;/api/&quot;, &quot;&quot;)</span>
+<span class="nc" id="L70">                    .replace(&quot;/&quot;, &quot;_&quot;);</span>
+            
+<span class="nc" id="L72">            String fileName = String.format(&quot;%s_%s_%s.txt&quot;, method, endpoint, timestamp);</span>
+
+            // ✅ Capturar dados da requisição
+<span class="nc" id="L75">            String queryString = request.getQueryString();</span>
+<span class="nc" id="L76">            String fullUrl = request.getRequestURL().toString();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (queryString != null) {</span>
+<span class="nc" id="L78">                fullUrl += &quot;?&quot; + queryString;</span>
+            }
+
+            // ✅ Capturar body da requisição
+<span class="nc" id="L82">            String requestBody = new String(request.getContentAsByteArray());</span>
+
+            // ✅ Capturar body da resposta (AQUI ESTÁ A MAGIA!)
+<span class="nc" id="L85">            String responseBody = new String(response.getContentAsByteArray());</span>
+
+            // ✅ Preparar conteúdo do arquivo
+<span class="nc" id="L88">            StringBuilder content = new StringBuilder();</span>
+<span class="nc" id="L89">            content.append(&quot;=== ENTREGA - TESTE DE ENDPOINT ===\n&quot;);</span>
+<span class="nc" id="L90">            content.append(&quot;Data/Hora: &quot;).append(LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy HH:mm:ss&quot;))).append(&quot;\n&quot;);</span>
+<span class="nc" id="L91">            content.append(&quot;Método: &quot;).append(method).append(&quot;\n&quot;);</span>
+<span class="nc" id="L92">            content.append(&quot;URL Completa: &quot;).append(fullUrl).append(&quot;\n&quot;);</span>
+<span class="nc" id="L93">            content.append(&quot;Status HTTP: &quot;).append(response.getStatus()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L94">            content.append(&quot;Content-Type: &quot;).append(response.getContentType()).append(&quot;\n&quot;);</span>
+
+            // ✅ ADICIONAR: Request Body (se houver)
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (!requestBody.isEmpty()) {</span>
+<span class="nc" id="L98">                content.append(&quot;\n=== DADOS ENVIADOS ===\n&quot;);</span>
+                try {
+<span class="nc" id="L100">                    Object jsonRequest = objectMapper.readValue(requestBody, Object.class);</span>
+<span class="nc" id="L101">                    String formattedRequest = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRequest);</span>
+<span class="nc" id="L102">                    content.append(formattedRequest);</span>
+<span class="nc" id="L103">                } catch (Exception e) {</span>
+<span class="nc" id="L104">                    content.append(requestBody);</span>
+<span class="nc" id="L105">                }</span>
+            }
+
+            // ✅ ADICIONAR: Response Body REAL
+<span class="nc" id="L109">            content.append(&quot;\n\n=== RESPOSTA REAL ===\n&quot;);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (!responseBody.isEmpty()) {</span>
+                try {
+<span class="nc" id="L112">                    Object jsonResponse = objectMapper.readValue(responseBody, Object.class);</span>
+<span class="nc" id="L113">                    String formattedResponse = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonResponse);</span>
+<span class="nc" id="L114">                    content.append(formattedResponse);</span>
+<span class="nc" id="L115">                } catch (Exception e) {</span>
+<span class="nc" id="L116">                    content.append(responseBody);</span>
+<span class="nc" id="L117">                }</span>
+            } else {
+<span class="nc" id="L119">                content.append(&quot;(Resposta vazia)&quot;);</span>
+            }
+
+            // ✅ Salvar arquivo
+<span class="nc" id="L123">            try (FileWriter writer = new FileWriter(new File(dir, fileName))) {</span>
+<span class="nc" id="L124">                writer.write(content.toString());</span>
+            }
+
+            // ✅ Log no console
+<span class="nc" id="L128">            System.out.println(&quot;📄 Resposta completa salva: entregaveis/&quot; + fileName);</span>
+
+<span class="nc" id="L130">        } catch (Exception e) {</span>
+<span class="nc" id="L131">            System.err.println(&quot;❌ Erro ao salvar resposta: &quot; + e.getMessage());</span>
+<span class="nc" id="L132">        }</span>
+<span class="nc" id="L133">    }</span>
+}
+ 
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

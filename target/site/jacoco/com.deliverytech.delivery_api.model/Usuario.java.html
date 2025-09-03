@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Usuario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.model</a> &gt; <span class="el_source">Usuario.java</span></div><h1>Usuario.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.deliverytech.delivery_api.model.Role;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+
+@Entity
+@Table(name = &quot;usuario&quot;)
+<span class="nc bnc" id="L16" title="All 70 branches missed.">@Data</span>
+<span class="fc" id="L17">@NoArgsConstructor</span>
+<span class="nc" id="L18">@AllArgsConstructor</span>
+<span class="nc" id="L19">@Builder</span>
+public class Usuario implements UserDetails {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L24">    private Long id;</span>
+
+<span class="nc" id="L26">    private String nome;</span>
+
+    @Column(unique = true, nullable = false)
+<span class="nc" id="L29">    private String email;</span>
+
+    @Column(nullable = false)
+<span class="nc" id="L32">    private String senha;</span>
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+<span class="nc" id="L36">    private Role role;</span>
+
+<span class="nc" id="L38">    private Boolean ativo;</span>
+
+    @Column(name = &quot;data_criacao&quot;)
+<span class="nc" id="L41">    private LocalDateTime dataCriacao;</span>
+
+    @Column(name = &quot;restaurante_id&quot;)
+<span class="nc" id="L44">    private Long restauranteId;</span>
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+<span class="nc" id="L48">        return Collections.singleton(role);</span>
+    }
+
+    @Override
+    public String getPassword() {
+<span class="nc" id="L53">        return senha;</span>
+    }
+
+    @Override
+    public String getUsername() {
+<span class="nc" id="L58">        return email;</span>
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+<span class="nc" id="L63">        return ativo;</span>
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+<span class="nc" id="L68">        return ativo;</span>
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+<span class="nc" id="L73">        return ativo;</span>
+    }
+
+    @Override
+    public boolean isEnabled() {
+<span class="nc" id="L78">        return ativo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

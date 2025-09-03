@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomDiskSpaceHealthIndicator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.health</a> &gt; <span class="el_source">CustomDiskSpaceHealthIndicator.java</span></div><h1>CustomDiskSpaceHealthIndicator.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.health;
+
+import java.io.File;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+@Component(&quot;customDiskSpace&quot;)
+<span class="fc" id="L9">public class CustomDiskSpaceHealthIndicator implements HealthIndicator {</span>
+
+    private static final long THRESHOLD = 1024 * 1024 * 100L;
+
+    @Override
+    public Health health() {
+        try {
+<span class="nc" id="L16">            File diskPath = new File(&quot;.&quot;);</span>
+<span class="nc" id="L17">            long freeSpace = diskPath.getTotalSpace();</span>
+
+<span class="nc bnc" id="L19" title="All 2 branches missed.">            if (freeSpace &gt; THRESHOLD) {</span>
+<span class="nc" id="L20">                return Health.up().withDetail(&quot;free-space-mb&quot;, freeSpace / (1024 * 1024))</span>
+<span class="nc" id="L21">                        .withDetail(&quot;free-space-mb&quot;, THRESHOLD / (1024 * 1024)).build();</span>
+            }
+
+<span class="nc" id="L24">            return Health.down().withDetail(&quot;free-space-mb&quot;, freeSpace / (1024 * 1024))</span>
+<span class="nc" id="L25">                    .withDetail(&quot;free-space-mb&quot;, THRESHOLD / (1024 * 1024))</span>
+<span class="nc" id="L26">                    .withDetail(&quot;Warning&quot;, &quot;Espaço em disco baixo.&quot;).build();</span>
+
+<span class="nc" id="L28">        } catch (Exception e) {</span>
+<span class="nc" id="L29">            return Health.down(e).withDetail(&quot;error&quot;, e.getMessage()).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

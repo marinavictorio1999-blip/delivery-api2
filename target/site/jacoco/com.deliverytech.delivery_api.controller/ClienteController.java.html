@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.controller</a> &gt; <span class="el_source">ClienteController.java</span></div><h1>ClienteController.java</h1><pre class="source lang-java linenums">
+package com.deliverytech.delivery_api.controller;
+
+import com.deliverytech.delivery_api.model.Cliente;
+import com.deliverytech.delivery_api.dto.request.ClienteRequest; // ✅ ADICIONAR IMPORT
+import com.deliverytech.delivery_api.dto.response.ApiResponseWrapper;
+import com.deliverytech.delivery_api.service.ClienteService; // ✅ INTERFACE
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+<span class="fc" id="L19">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/api/clientes&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+public class ClienteController {
+
+    private final ClienteService clienteService; // ✅ INJEÇÃO DA INTERFACE
+
+    /**
+     * Cadastrar novo cliente
+     * POST /clientes
+     */
+    @PostMapping
+    public ResponseEntity&lt;?&gt; cadastrar(@Valid @RequestBody ClienteRequest clienteRequest) {
+        try {
+<span class="nc" id="L35">            log.info(&quot;Recebida requisição para cadastrar cliente: {}&quot;, clienteRequest.getEmail());</span>
+<span class="nc" id="L36">            Cliente clienteSalvo = clienteService.cadastrar(clienteRequest);</span>
+<span class="nc" id="L37">            return ResponseEntity.status(HttpStatus.CREATED).body(clienteSalvo);</span>
+<span class="nc" id="L38">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L39">            log.warn(&quot;Erro de validação ao cadastrar cliente: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L40">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L41">        } catch (Exception e) {</span>
+<span class="nc" id="L42">            log.error(&quot;Erro interno ao cadastrar cliente&quot;, e);</span>
+<span class="nc" id="L43">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L44">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Listar todos os clientes ativos
+     * GET /clientes
+     */
+    @GetMapping
+    public ResponseEntity&lt;List&lt;Cliente&gt;&gt; listar() {
+<span class="nc" id="L54">        log.info(&quot;Recebida requisição para listar clientes ativos&quot;);</span>
+<span class="nc" id="L55">        List&lt;Cliente&gt; clientes = clienteService.listarAtivos();</span>
+<span class="nc" id="L56">        return ResponseEntity.ok(clientes);</span>
+    }
+
+    /**
+     * Buscar cliente por ID
+     * GET /clientes/{id}
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;ApiResponseWrapper&lt;Cliente&gt;&gt; buscarPorId(@PathVariable Long id) {
+<span class="nc" id="L65">        log.info(&quot;Recebida requisição para buscar cliente ID: {}&quot;, id);</span>
+<span class="nc" id="L66">        Optional&lt;Cliente&gt; cliente = clienteService.buscarPorId(id);</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (cliente.isPresent()) {</span>
+<span class="nc" id="L69">            return ResponseEntity.ok(ApiResponseWrapper.success(cliente.get(), &quot;Cliente encontrado&quot;));</span>
+        } else {
+<span class="nc" id="L71">            return ResponseEntity.status(HttpStatus.NOT_FOUND)</span>
+<span class="nc" id="L72">                .body(ApiResponseWrapper.error(&quot;Cliente não encontrado&quot;));</span>
+        }
+    }
+
+    /**
+     * Buscar cliente por email
+     * GET /clientes/email/{email}
+     */
+    @GetMapping(&quot;/email/{email}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorEmail(@PathVariable String email) {
+<span class="nc" id="L82">        log.info(&quot;Recebida requisição para buscar cliente por email: {}&quot;, email);</span>
+<span class="nc" id="L83">        Optional&lt;Cliente&gt; cliente = clienteService.buscarPorEmail(email);</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (cliente.isPresent()) {</span>
+<span class="nc" id="L86">            return ResponseEntity.ok(cliente.get());</span>
+        } else {
+<span class="nc" id="L88">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    /**
+     * Buscar clientes por nome
+     * GET /clientes/buscar?nome=João
+     */
+    @GetMapping(&quot;/buscar&quot;)
+    public ResponseEntity&lt;List&lt;Cliente&gt;&gt; buscarPorNome(@RequestParam String nome) {
+<span class="nc" id="L98">        log.info(&quot;Recebida requisição para buscar clientes por nome: {}&quot;, nome);</span>
+<span class="nc" id="L99">        List&lt;Cliente&gt; clientes = clienteService.buscarPorNome(nome);</span>
+<span class="nc" id="L100">        return ResponseEntity.ok(clientes);</span>
+    }
+
+    /**
+     * Atualizar cliente
+     * PUT /api/clientes/{id}
+     */
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; atualizar(@PathVariable Long id,
+                                      @Valid @RequestBody ClienteRequest clienteRequest) { // ✅ ALTERAR: Cliente → ClienteRequest
+        try {
+<span class="nc" id="L111">            log.info(&quot;Recebida requisição para atualizar cliente ID: {}&quot;, id);</span>
+<span class="nc" id="L112">            Cliente clienteAtualizado = clienteService.atualizar(id, clienteRequest); // ✅ ALTERAR se o service suportar</span>
+<span class="nc" id="L113">            return ResponseEntity.ok(clienteAtualizado);</span>
+<span class="nc" id="L114">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L115">            log.warn(&quot;Erro de validação ao atualizar cliente: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L116">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L117">        } catch (Exception e) {</span>
+<span class="nc" id="L118">            log.error(&quot;Erro interno ao atualizar cliente&quot;, e);</span>
+<span class="nc" id="L119">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L120">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Inativar cliente (soft delete)
+     * DELETE /clientes/{id}
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; inativar(@PathVariable Long id) {
+        try {
+<span class="nc" id="L131">            log.info(&quot;Recebida requisição para inativar cliente ID: {}&quot;, id);</span>
+<span class="nc" id="L132">            clienteService.inativar(id);</span>
+<span class="nc" id="L133">            return ResponseEntity.ok().body(&quot;Cliente inativado com sucesso&quot;);</span>
+<span class="nc" id="L134">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L135">            log.warn(&quot;Erro ao inativar cliente: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L136">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L137">        } catch (Exception e) {</span>
+<span class="nc" id="L138">            log.error(&quot;Erro interno ao inativar cliente&quot;, e);</span>
+<span class="nc" id="L139">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L140">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Ativar/Desativar cliente (toggle status ativo)
+     * PATCH /api/clientes/{id}/status
+     */
+    @PatchMapping(&quot;/{id}/status&quot;)
+    public ResponseEntity&lt;?&gt; ativarDesativarCliente(@PathVariable Long id) {
+        try {
+<span class="nc" id="L151">            log.info(&quot;Recebida requisição para alterar status do cliente ID: {}&quot;, id);</span>
+<span class="nc" id="L152">            Cliente clienteAtualizado = clienteService.ativarDesativarCliente(id);</span>
+            
+<span class="nc bnc" id="L154" title="All 2 branches missed.">            String status = clienteAtualizado.getAtivo() ? &quot;ativado&quot; : &quot;desativado&quot;;</span>
+<span class="nc" id="L155">            return ResponseEntity.ok()</span>
+<span class="nc" id="L156">                .body(Map.of(</span>
+                    &quot;mensagem&quot;, &quot;Cliente &quot; + status + &quot; com sucesso&quot;,
+                    &quot;cliente&quot;, clienteAtualizado
+                ));
+            
+<span class="nc" id="L161">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L162">            log.warn(&quot;Erro ao alterar status do cliente: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L163">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L164">        } catch (Exception e) {</span>
+<span class="nc" id="L165">            log.error(&quot;Erro interno ao alterar status do cliente&quot;, e);</span>
+<span class="nc" id="L166">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L167">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

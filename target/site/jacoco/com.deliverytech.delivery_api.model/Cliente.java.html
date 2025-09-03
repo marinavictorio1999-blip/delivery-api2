@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cliente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.model</a> &gt; <span class="el_source">Cliente.java</span></div><h1>Cliente.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+@Entity
+<span class="pc bnc" id="L11" title="All 62 branches missed.">@Data</span>
+<span class="fc" id="L12">@NoArgsConstructor</span>
+<span class="nc" id="L13">@AllArgsConstructor</span>
+<span class="pc bnc" id="L14" title="All 4 branches missed.">@Builder</span>
+public class Cliente {
+
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L19">    private Long id;</span>
+
+<span class="nc" id="L21">    private String nome;</span>
+<span class="nc" id="L22">    private String telefone;</span>
+<span class="nc" id="L23">    private String endereco;</span>
+
+    @Column(unique = true)
+<span class="nc" id="L26">    private String email;</span>
+
+    @Builder.Default
+<span class="pc" id="L29">    private Boolean ativo = true;</span>
+
+    @Builder.Default
+<span class="pc" id="L32">    private LocalDateTime dataCriacao = LocalDateTime.now();</span>
+
+    // IMPLEMENTAR APENAS O MÉTODO PERSONALIZADO
+    @JsonIgnore
+    public void inativar() {
+<span class="nc" id="L37">        this.ativo = false;</span>
+<span class="nc" id="L38">    }</span>
+
+    // Comentário mantido para referência futura
+    /* @OneToMany(mappedBy = &quot;cliente&quot;, cascade = CascadeType.ALL)
+    private List&lt;Pedido&gt; pedidos; */
+
+    // Construtor customizado para testes
+<span class="nc" id="L45">    public Cliente(Long id, String nome, String email, String telefone, String endereco, LocalDateTime dataCriacao, Boolean ativo, Object unused) {</span>
+<span class="nc" id="L46">        this.id = id;</span>
+<span class="nc" id="L47">        this.nome = nome;</span>
+<span class="nc" id="L48">        this.email = email;</span>
+<span class="nc" id="L49">        this.telefone = telefone;</span>
+<span class="nc" id="L50">        this.endereco = endereco;</span>
+<span class="nc" id="L51">        this.dataCriacao = dataCriacao;</span>
+<span class="nc" id="L52">        this.ativo = ativo;</span>
+        // O parâmetro 'unused' é ignorado
+<span class="nc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

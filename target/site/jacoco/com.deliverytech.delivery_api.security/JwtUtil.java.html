@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.security</a> &gt; <span class="el_source">JwtUtil.java</span></div><h1>JwtUtil.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+@Component
+<span class="fc" id="L16">public class JwtUtil {</span>
+
+    @Value(&quot;${jwt.secret}&quot;)
+    private String secret;
+    
+    @Value(&quot;${jwt.expiration}&quot;)
+    private Long expiration;
+    
+    // Gera um token JWT para o usuário
+    public String gerarToken(String email) {
+<span class="nc" id="L26">        Date agora = new Date();</span>
+<span class="nc" id="L27">        Date dataExpiracao = new Date(agora.getTime() + expiration);</span>
+<span class="nc" id="L28">        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secret));</span>
+        
+<span class="nc" id="L30">        return Jwts.builder()</span>
+<span class="nc" id="L31">                .subject(email)</span>
+<span class="nc" id="L32">                .issuedAt(agora)</span>
+<span class="nc" id="L33">                .expiration(dataExpiracao)</span>
+<span class="nc" id="L34">                .signWith(key)</span>
+<span class="nc" id="L35">                .compact();</span>
+    }
+    
+    // Valida um token JWT e retorna as claims
+    public Claims validarToken(String token) {
+        try {
+<span class="nc" id="L41">            SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secret));</span>
+
+<span class="nc" id="L43">            return Jwts.parser()</span>
+<span class="nc" id="L44">                    .verifyWith(key)</span>
+<span class="nc" id="L45">                    .build()</span>
+<span class="nc" id="L46">                    .parseSignedClaims(token)</span>
+<span class="nc" id="L47">                    .getPayload();</span>
+<span class="nc" id="L48">        } catch (Exception e) {</span>
+<span class="nc" id="L49">            return null; // Token inválido</span>
+        }
+    }
+    
+    // Extrai o email (subject) do token
+    public String getEmailFromToken(String token) {
+<span class="nc" id="L55">        Claims claims = validarToken(token);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return claims != null ? claims.getSubject() : null;</span>
+    }
+
+    public String generateToken(String name) {
+        // TODO Auto-generated method stub
+<span class="nc" id="L61">        throw new UnsupportedOperationException(&quot;Unimplemented method 'generateToken'&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

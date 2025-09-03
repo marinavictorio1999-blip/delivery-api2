@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PedidoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.controller</a> &gt; <span class="el_source">PedidoController.java</span></div><h1>PedidoController.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.controller;
+
+import com.deliverytech.delivery_api.dto.request.PedidoRequest;
+import com.deliverytech.delivery_api.model.Pedido;
+import com.deliverytech.delivery_api.model.StatusPedido;
+import com.deliverytech.delivery_api.service.PedidoService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid; // corrigido
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+
+<span class="fc" id="L21">@Slf4j</span>
+@RestController
+@RequestMapping(&quot;/api/pedidos&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L25">@RequiredArgsConstructor</span>
+public class PedidoController {
+
+    private final PedidoService pedidoService;
+
+    /**
+     * Realizar um novo pedido
+     * POST /pedidos
+     */
+    @PostMapping
+    public ResponseEntity&lt;?&gt; realizar(@Valid @RequestBody PedidoRequest pedidoRequest) {
+        try {
+<span class="nc" id="L37">            log.info(&quot;Recebida requisição para realizar pedido&quot;);</span>
+<span class="nc" id="L38">            Pedido pedidoSalvo = pedidoService.realizar(pedidoRequest);</span>
+<span class="nc" id="L39">            return ResponseEntity.status(HttpStatus.CREATED).body(pedidoSalvo);</span>
+<span class="nc" id="L40">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L41">            log.warn(&quot;Erro de validação ao realizar pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L42">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L43">        } catch (Exception e) {</span>
+<span class="nc" id="L44">            log.error(&quot;Erro interno ao realizar pedido&quot;, e);</span>
+<span class="nc" id="L45">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L46">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Buscar pedido por ID
+     * GET /pedidos/{id}
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; buscarPorId(@PathVariable Long id) {
+<span class="nc" id="L56">        log.info(&quot;Recebida requisição para buscar pedido por ID: {}&quot;, id);</span>
+<span class="nc" id="L57">        return pedidoService.buscarPorIdComItens(id)</span>
+<span class="nc" id="L58">            .map(ResponseEntity::ok)</span>
+<span class="nc" id="L59">            .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    /**
+     * Listar pedidos por cliente
+     * GET /pedidos/cliente/{clienteId}
+     */
+    @GetMapping(&quot;/cliente/{clienteId}&quot;)
+    public ResponseEntity&lt;List&lt;Pedido&gt;&gt; listarPorCliente(@PathVariable Long clienteId) {
+<span class="nc" id="L68">        log.info(&quot;Recebida requisição para listar pedidos do cliente ID: {}&quot;, clienteId);</span>
+<span class="nc" id="L69">        List&lt;Pedido&gt; pedidos = pedidoService.listarPorCliente(clienteId);</span>
+<span class="nc" id="L70">        return ResponseEntity.ok(pedidos);</span>
+    }
+
+    /**
+     * Listar pedidos por restaurante
+     * GET /pedidos/restaurante/{restauranteId}
+     */
+    @GetMapping(&quot;/restaurante/{restauranteId}&quot;)
+    public ResponseEntity&lt;List&lt;Pedido&gt;&gt; listarPorRestaurante(@PathVariable Long restauranteId) {
+<span class="nc" id="L79">        log.info(&quot;Recebida requisição para listar pedidos do restaurante ID: {}&quot;, restauranteId);</span>
+<span class="nc" id="L80">        List&lt;Pedido&gt; pedidos = pedidoService.listarPorRestaurante(restauranteId);</span>
+<span class="nc" id="L81">        return ResponseEntity.ok(pedidos);</span>
+    }
+
+    /**
+     * Listar pedidos por status
+     * GET /pedidos/status/{status}
+     */
+    @GetMapping(&quot;/status/{status}&quot;)
+    public ResponseEntity&lt;List&lt;Pedido&gt;&gt; listarPorStatus(@PathVariable StatusPedido status) {
+<span class="nc" id="L90">        log.info(&quot;Recebida requisição para listar pedidos com status: {}&quot;, status);</span>
+<span class="nc" id="L91">        List&lt;Pedido&gt; pedidos = pedidoService.listarPorStatus(status);</span>
+<span class="nc" id="L92">        return ResponseEntity.ok(pedidos);</span>
+    }
+
+    /**
+     * Listar pedidos por restaurante e status
+     * GET /pedidos/restaurante/{restauranteId}/status/{status}
+     */
+    @GetMapping(&quot;/restaurante/{restauranteId}/status/{status}&quot;)
+    public ResponseEntity&lt;List&lt;Pedido&gt;&gt; listarPorRestauranteEStatus(
+            @PathVariable Long restauranteId,
+            @PathVariable StatusPedido status) {
+<span class="nc" id="L103">        log.info(&quot;Recebida requisição para listar pedidos do restaurante ID: {} com status: {}&quot;, restauranteId, status);</span>
+<span class="nc" id="L104">        List&lt;Pedido&gt; pedidos = pedidoService.listarPorRestauranteEStatus(restauranteId, status);</span>
+<span class="nc" id="L105">        return ResponseEntity.ok(pedidos);</span>
+    }
+
+    /**
+     * Atualizar status do pedido
+     * PATCH /pedidos/{id}/status
+     */
+    @PatchMapping(&quot;/{id}/status&quot;)
+    public ResponseEntity&lt;?&gt; atualizarStatus(@PathVariable Long id, @RequestParam StatusPedido status) {
+        try {
+<span class="nc" id="L115">            log.info(&quot;Recebida requisição para atualizar status do pedido ID: {} para {}&quot;, id, status);</span>
+<span class="nc" id="L116">            Pedido pedido = pedidoService.atualizarStatus(id, status);</span>
+<span class="nc" id="L117">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L118">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L119">            log.warn(&quot;Erro de validação ao atualizar status do pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L120">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L121">        } catch (Exception e) {</span>
+<span class="nc" id="L122">            log.error(&quot;Erro interno ao atualizar status do pedido&quot;, e);</span>
+<span class="nc" id="L123">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L124">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Confirmar pedido
+     * PATCH /pedidos/{id}/confirmar
+     */
+    @PatchMapping(&quot;/{id}/confirmar&quot;)
+    public ResponseEntity&lt;?&gt; confirmar(@PathVariable Long id) {
+        try {
+<span class="nc" id="L135">            log.info(&quot;Recebida requisição para confirmar pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L136">            Pedido pedido = pedidoService.confirmar(id);</span>
+<span class="nc" id="L137">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L138">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L139">            log.warn(&quot;Erro de validação ao confirmar pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L140">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L141">        } catch (Exception e) {</span>
+<span class="nc" id="L142">            log.error(&quot;Erro interno ao confirmar pedido&quot;, e);</span>
+<span class="nc" id="L143">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L144">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Iniciar preparo do pedido
+     * PATCH /pedidos/{id}/iniciar-preparo
+     */
+    @PatchMapping(&quot;/{id}/iniciar-preparo&quot;)
+    public ResponseEntity&lt;?&gt; iniciarPreparo(@PathVariable Long id) {
+        try {
+<span class="nc" id="L155">            log.info(&quot;Recebida requisição para iniciar preparo do pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L156">            Pedido pedido = pedidoService.iniciarPreparo(id);</span>
+<span class="nc" id="L157">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L158">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L159">            log.warn(&quot;Erro de validação ao iniciar preparo do pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L160">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L161">        } catch (Exception e) {</span>
+<span class="nc" id="L162">            log.error(&quot;Erro interno ao iniciar preparo do pedido&quot;, e);</span>
+<span class="nc" id="L163">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L164">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Finalizar preparo do pedido
+     * PATCH /pedidos/{id}/finalizar-preparo
+     */
+    @PatchMapping(&quot;/{id}/finalizar-preparo&quot;)
+    public ResponseEntity&lt;?&gt; finalizarPreparo(@PathVariable Long id) {
+        try {
+<span class="nc" id="L175">            log.info(&quot;Recebida requisição para finalizar preparo do pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L176">            Pedido pedido = pedidoService.finalizarPreparo(id);</span>
+<span class="nc" id="L177">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L178">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L179">            log.warn(&quot;Erro de validação ao finalizar preparo do pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L180">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L181">        } catch (Exception e) {</span>
+<span class="nc" id="L182">            log.error(&quot;Erro interno ao finalizar preparo do pedido&quot;, e);</span>
+<span class="nc" id="L183">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L184">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Iniciar entrega do pedido
+     * PATCH /pedidos/{id}/iniciar-entrega
+     */
+    @PatchMapping(&quot;/{id}/iniciar-entrega&quot;)
+    public ResponseEntity&lt;?&gt; iniciarEntrega(@PathVariable Long id) {
+        try {
+<span class="nc" id="L195">            log.info(&quot;Recebida requisição para iniciar entrega do pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L196">            Pedido pedido = pedidoService.iniciarEntrega(id);</span>
+<span class="nc" id="L197">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L198">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L199">            log.warn(&quot;Erro de validação ao iniciar entrega do pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L200">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L201">        } catch (Exception e) {</span>
+<span class="nc" id="L202">            log.error(&quot;Erro interno ao iniciar entrega do pedido&quot;, e);</span>
+<span class="nc" id="L203">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L204">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Finalizar entrega do pedido
+     * PATCH /pedidos/{id}/finalizar-entrega
+     */
+    @PatchMapping(&quot;/{id}/finalizar-entrega&quot;)
+    public ResponseEntity&lt;?&gt; finalizarEntrega(@PathVariable Long id) {
+        try {
+<span class="nc" id="L215">            log.info(&quot;Recebida requisição para finalizar entrega do pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L216">            Pedido pedido = pedidoService.finalizarEntrega(id);</span>
+<span class="nc" id="L217">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L218">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L219">            log.warn(&quot;Erro de validação ao finalizar entrega do pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L220">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L221">        } catch (Exception e) {</span>
+<span class="nc" id="L222">            log.error(&quot;Erro interno ao finalizar entrega do pedido&quot;, e);</span>
+<span class="nc" id="L223">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L224">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Cancelar pedido
+     * PATCH /pedidos/{id}/cancelar
+     */
+    @PatchMapping(&quot;/{id}/cancelar&quot;)
+    public ResponseEntity&lt;?&gt; cancelar(@PathVariable Long id) {
+        try {
+<span class="nc" id="L235">            log.info(&quot;Recebida requisição para cancelar pedido ID: {}&quot;, id);</span>
+<span class="nc" id="L236">            Pedido pedido = pedidoService.cancelar(id);</span>
+<span class="nc" id="L237">            return ResponseEntity.ok(pedido);</span>
+<span class="nc" id="L238">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L239">            log.warn(&quot;Erro de validação ao cancelar pedido: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L240">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L241">        } catch (Exception e) {</span>
+<span class="nc" id="L242">            log.error(&quot;Erro interno ao cancelar pedido&quot;, e);</span>
+<span class="nc" id="L243">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L244">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Listar pedidos por período
+     * GET /pedidos/periodo?restauranteId={id}&amp;inicio={data}&amp;fim={data}
+     */
+    @GetMapping(&quot;/periodo&quot;)
+    public ResponseEntity&lt;?&gt; listarPorPeriodo(
+            @RequestParam Long restauranteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
+        try {
+<span class="nc" id="L258">            log.info(&quot;Recebida requisição para listar pedidos do restaurante ID: {} no período de {} a {}&quot;, </span>
+                restauranteId, inicio, fim);
+                
+<span class="nc" id="L261">            LocalDateTime dataInicio = inicio.atStartOfDay();</span>
+<span class="nc" id="L262">            LocalDateTime dataFim = fim.atTime(LocalTime.MAX);</span>
+            
+<span class="nc" id="L264">            List&lt;Pedido&gt; pedidos = pedidoService.listarPorPeriodo(restauranteId, dataInicio, dataFim);</span>
+<span class="nc" id="L265">            return ResponseEntity.ok(pedidos);</span>
+<span class="nc" id="L266">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L267">            log.warn(&quot;Erro de validação ao listar pedidos por período: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L268">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L269">        } catch (Exception e) {</span>
+<span class="nc" id="L270">            log.error(&quot;Erro interno ao listar pedidos por período&quot;, e);</span>
+<span class="nc" id="L271">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L272">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+
+    /**
+     * Obter estatísticas de pedidos por período
+     * GET /pedidos/estatisticas?restauranteId={id}&amp;inicio={data}&amp;fim={data}
+     */
+    @GetMapping(&quot;/estatisticas&quot;)
+    public ResponseEntity&lt;?&gt; obterEstatisticas(
+            @RequestParam Long restauranteId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
+        try {
+<span class="nc" id="L286">            log.info(&quot;Recebida requisição para obter estatísticas do restaurante ID: {} no período de {} a {}&quot;, </span>
+                restauranteId, inicio, fim);
+                
+<span class="nc" id="L289">            LocalDateTime dataInicio = inicio.atStartOfDay();</span>
+<span class="nc" id="L290">            LocalDateTime dataFim = fim.atTime(LocalTime.MAX);</span>
+            
+<span class="nc" id="L292">            Map&lt;String, Object&gt; estatisticas = pedidoService.obterEstatisticas(restauranteId, dataInicio, dataFim);</span>
+<span class="nc" id="L293">            return ResponseEntity.ok(estatisticas);</span>
+<span class="nc" id="L294">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L295">            log.warn(&quot;Erro de validação ao obter estatísticas: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L296">            return ResponseEntity.badRequest().body(&quot;Erro: &quot; + e.getMessage());</span>
+<span class="nc" id="L297">        } catch (Exception e) {</span>
+<span class="nc" id="L298">            log.error(&quot;Erro interno ao obter estatísticas&quot;, e);</span>
+<span class="nc" id="L299">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L300">                .body(&quot;Erro interno do servidor&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

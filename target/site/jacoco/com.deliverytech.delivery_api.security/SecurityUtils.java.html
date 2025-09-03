@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.security</a> &gt; <span class="el_source">SecurityUtils.java</span></div><h1>SecurityUtils.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.security;
+// import com.deliverytech.delivery_api.entity.Usuario;
+import com.deliverytech.delivery_api.model.Usuario; // Update this line if 'Usuario' is in 'model' package, or correct to the actual package
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
+
+<span class="nc" id="L9">public class SecurityUtils {</span>
+
+    public static Optional&lt;Usuario&gt; getCurrentUser() {
+<span class="nc" id="L12">        Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc bnc" id="L13" title="All 4 branches missed.">        if (auth != null &amp;&amp; auth.getPrincipal() instanceof Usuario usuario) {</span>
+<span class="nc" id="L14">            return Optional.of(usuario);</span>
+        }
+<span class="nc" id="L16">        return Optional.empty();</span>
+    }
+
+    public static Long getCurrentUserId() {
+<span class="nc" id="L20">        return getCurrentUser()</span>
+<span class="nc" id="L21">                .map(Usuario::getId)</span>
+<span class="nc" id="L22">                .orElseThrow(() -&gt; new RuntimeException(&quot;Usuário não autenticado&quot;));</span>
+    }
+
+    public static boolean hasRole(String role) {
+<span class="nc" id="L26">        return getCurrentUser()</span>
+<span class="nc" id="L27">                .map(u -&gt; u.getRole().name().equals(role))</span>
+<span class="nc" id="L28">                .orElse(false);</span>
+    }
+
+    public static boolean isRestaurante() {
+<span class="nc" id="L32">        return hasRole(&quot;RESTAURANTE&quot;);</span>
+    }
+
+    public static boolean isAdmin() {
+<span class="nc" id="L36">        return hasRole(&quot;ADMIN&quot;);</span>
+    }
+
+    public static boolean isCliente() {
+<span class="nc" id="L40">        return hasRole(&quot;CLIENTE&quot;);</span>
+    }
+
+    public static boolean isEntregador() {
+<span class="nc" id="L44">        return hasRole(&quot;ENTREGADOR&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

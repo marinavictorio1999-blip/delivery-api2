@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.controller</a> &gt; <span class="el_source">ProdutoController.java</span></div><h1>ProdutoController.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.controller;
+
+
+
+import com.deliverytech.delivery_api.dto.request.ProdutoRequest;
+import com.deliverytech.delivery_api.dto.response.ProdutoResponse;
+import com.deliverytech.delivery_api.model.Produto;
+import com.deliverytech.delivery_api.model.Restaurante;
+import com.deliverytech.delivery_api.service.ProdutoService;
+import com.deliverytech.delivery_api.service.RestauranteService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+@RestController
+@RequestMapping(&quot;/api/produtos&quot;)
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+public class ProdutoController {
+
+
+    private final ProdutoService produtoService;
+    private final RestauranteService restauranteService;
+
+
+    @PostMapping
+    public ResponseEntity&lt;ProdutoResponse&gt; cadastrar(@Valid @RequestBody ProdutoRequest request) {
+<span class="nc" id="L33">        Restaurante restaurante = restauranteService.buscarPorId(request.getRestauranteId())</span>
+<span class="nc" id="L34">                .orElseThrow(() -&gt; new RuntimeException(&quot;Restaurante não encontrado&quot;));</span>
+
+
+<span class="nc" id="L37">        Produto produto = Produto.builder()</span>
+<span class="nc" id="L38">                .nome(request.getNome())</span>
+<span class="nc" id="L39">                .categoria(request.getCategoria())</span>
+<span class="nc" id="L40">                .descricao(request.getDescricao())</span>
+<span class="nc" id="L41">                .preco(request.getPreco())</span>
+<span class="nc" id="L42">                .ativo(true)</span>
+<span class="nc" id="L43">                .restaurante(restaurante)</span>
+<span class="nc" id="L44">                .build();</span>
+
+
+<span class="nc" id="L47">        Produto salvo = produtoService.cadastrar(request);//corrido</span>
+<span class="nc" id="L48">        return ResponseEntity.status(201).body(new ProdutoResponse(</span>
+<span class="nc" id="L49">                salvo.getId(), salvo.getNome(), salvo.getCategoria(), </span>
+<span class="nc" id="L50">                salvo.getDescricao(), salvo.getPreco(), salvo.getAtivo()));</span>
+    }
+
+
+    @GetMapping(&quot;/restaurante/{restauranteId}&quot;)
+    public List&lt;ProdutoResponse&gt; listarPorRestaurante(@PathVariable Long restauranteId) {
+<span class="nc" id="L56">        return produtoService.listarPorRestaurante(restauranteId).stream()</span>
+<span class="nc" id="L57">                .map(p -&gt; new ProdutoResponse(p.getId(), p.getNome(), p.getCategoria(),</span>
+<span class="nc" id="L58">                    p.getDescricao(), p.getPreco(), p.getAtivo()))</span>
+<span class="nc" id="L59">                .collect(Collectors.toList());</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;ProdutoResponse&gt; atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequest request) {
+<span class="nc" id="L64">        Produto atualizado = Produto.builder()</span>
+<span class="nc" id="L65">                .nome(request.getNome())</span>
+<span class="nc" id="L66">                .categoria(request.getCategoria())</span>
+<span class="nc" id="L67">                .descricao(request.getDescricao())</span>
+<span class="nc" id="L68">                .preco(request.getPreco())</span>
+<span class="nc" id="L69">                .build();</span>
+<span class="nc" id="L70">        Produto salvo = produtoService.atualizar(id, request); // corrigido</span>
+<span class="nc" id="L71">        return ResponseEntity.ok(new ProdutoResponse(salvo.getId(), salvo.getNome(), salvo.getCategoria(), salvo.getDescricao(), salvo.getPreco(), salvo.getAtivo()));</span>
+    }
+
+
+    @PatchMapping(&quot;/{id}/disponibilidade&quot;)
+    public ResponseEntity&lt;Void&gt; alterarDisponibilidade(@PathVariable Long id) {
+<span class="nc" id="L77">        produtoService.alterarDisponibilidade(id);</span>
+<span class="nc" id="L78">        return ResponseEntity.noContent().build();</span>
+    }
+
+
+    // ADICIONAR: Listar todos os produtos
+    @GetMapping
+    public List&lt;ProdutoResponse&gt; listarTodos() {
+<span class="nc" id="L85">        return produtoService.listarTodos().stream()</span>
+<span class="nc" id="L86">                .map(p -&gt; new ProdutoResponse(</span>
+<span class="nc" id="L87">                    p.getId(), p.getNome(), p.getCategoria(),</span>
+<span class="nc" id="L88">                    p.getDescricao(), p.getPreco(), p.getAtivo()))</span>
+<span class="nc" id="L89">                .collect(Collectors.toList());</span>
+    }
+
+
+    // ADICIONAR: Buscar produto por ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;ProdutoResponse&gt; buscarPorId(@PathVariable Long id) {
+<span class="nc" id="L96">        return produtoService.buscarPorId(id)</span>
+<span class="nc" id="L97">                .map(p -&gt; new ProdutoResponse(p.getId(), p.getNome(), p.getCategoria(),</span>
+<span class="nc" id="L98">                     p.getDescricao(), p.getPreco(), p.getAtivo()))</span>
+<span class="nc" id="L99">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L100">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+
+    @DeleteMapping(&quot;/{id}/inativar&quot;)
+    public ResponseEntity&lt;Void&gt; inativar(@PathVariable Long id) {
+<span class="nc" id="L106">        produtoService.excluir(id);</span>
+<span class="nc" id="L107">        return ResponseEntity.noContent().build();</span>
+    }
+
+
+    /**
+     * Buscar produtos por categoria
+     * GET /api/produtos/categoria/{categoria}
+     */
+   @GetMapping(&quot;/categoria/{categoria}&quot;) // corrigido 
+    public List&lt;ProdutoResponse&gt; buscarPorCategoria(
+            @RequestParam Long restauranteId, 
+            @PathVariable String categoria) {
+<span class="nc" id="L119">        return produtoService.buscarPorCategoria(restauranteId, categoria).stream()</span>
+<span class="nc" id="L120">                .map(p -&gt; new ProdutoResponse(p.getId(), p.getNome(), p.getCategoria(),</span>
+<span class="nc" id="L121">                    p.getDescricao(), p.getPreco(), p.getAtivo()))</span>
+<span class="nc" id="L122">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Busca produtos por nome
+     * GET /api/produtos/buscar?nome={nome}
+     */
+    
+    @GetMapping(&quot;/buscar&quot;)
+    public ResponseEntity&lt;List&lt;ProdutoResponse&gt;&gt; buscarPorNome(
+            @RequestParam Long restauranteId, 
+            @RequestParam String nome) {
+<span class="nc" id="L134">        List&lt;Produto&gt; produtos = produtoService.buscarPorNome(restauranteId, nome);</span>
+<span class="nc" id="L135">        List&lt;ProdutoResponse&gt; response = produtos.stream()</span>
+<span class="nc" id="L136">            .map(p -&gt; new ProdutoResponse(p.getId(), p.getNome(), p.getCategoria(),</span>
+<span class="nc" id="L137">                p.getDescricao(), p.getPreco(), p.getAtivo()))</span>
+<span class="nc" id="L138">            .collect(Collectors.toList());</span>
+<span class="nc" id="L139">        return ResponseEntity.ok(response);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

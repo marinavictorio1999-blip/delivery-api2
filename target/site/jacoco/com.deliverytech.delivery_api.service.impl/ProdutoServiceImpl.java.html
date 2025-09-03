@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProdutoServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.service.impl</a> &gt; <span class="el_source">ProdutoServiceImpl.java</span></div><h1>ProdutoServiceImpl.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.service.impl;
+
+import com.deliverytech.delivery_api.dto.request.ProdutoRequest;
+import com.deliverytech.delivery_api.model.Produto;
+import com.deliverytech.delivery_api.model.Restaurante;
+import com.deliverytech.delivery_api.repository.ProdutoRepository;
+import com.deliverytech.delivery_api.service.ProdutoService;
+import com.deliverytech.delivery_api.service.RestauranteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+<span class="fc" id="L18">@Slf4j</span>
+@Service
+@Transactional
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+public class ProdutoServiceImpl implements ProdutoService {
+
+    private final ProdutoRepository produtoRepository;
+    private final RestauranteService restauranteService;
+
+    /**
+     * Cadastra um novo produto
+     */
+    @Override
+    public Produto cadastrar(ProdutoRequest produtoRequest) {
+<span class="nc" id="L32">        log.info(&quot;Iniciando cadastro de produto: {}&quot;, produtoRequest.getNome());</span>
+        
+        // Buscar o restaurante pelo ID
+<span class="nc" id="L35">        Restaurante restaurante = restauranteService.buscarPorId(produtoRequest.getRestauranteId())</span>
+<span class="nc" id="L36">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + produtoRequest.getRestauranteId()));</span>
+
+        // Converter ProdutoRequest para Produto
+<span class="nc" id="L39">        Produto produto = new Produto();</span>
+<span class="nc" id="L40">        produto.setNome(produtoRequest.getNome());</span>
+<span class="nc" id="L41">        produto.setDescricao(produtoRequest.getDescricao());</span>
+<span class="nc" id="L42">        produto.setPreco(produtoRequest.getPreco());</span>
+<span class="nc" id="L43">        produto.setCategoria(produtoRequest.getCategoria());</span>
+<span class="nc" id="L44">        produto.setImagemUrl(produtoRequest.getImagemUrl());</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        produto.setAtivo(produtoRequest.getDisponivel() != null ? produtoRequest.getDisponivel() : true);</span>
+<span class="nc" id="L46">        produto.setRestaurante(restaurante);</span>
+        
+        // Validações de negócio
+<span class="nc" id="L49">        validarDadosProduto(produto);</span>
+        
+<span class="nc" id="L51">        Produto produtoSalvo = produtoRepository.save(produto);</span>
+<span class="nc" id="L52">        log.info(&quot;Produto cadastrado com sucesso - ID: {}&quot;, produtoSalvo.getId());</span>
+        
+<span class="nc" id="L54">        return produtoSalvo;</span>
+    }
+
+    /**
+     * Busca produto por ID
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Produto&gt; buscarPorId(Long id) {
+<span class="nc" id="L63">        log.info(&quot;Buscando produto por ID: {}&quot;, id);</span>
+<span class="nc" id="L64">        return produtoRepository.findById(id);</span>
+    }
+
+    /**
+     * Lista produtos por restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; listarPorRestaurante(Long restauranteId) {
+<span class="nc" id="L73">        log.info(&quot;Listando produtos do restaurante ID: {}&quot;, restauranteId);</span>
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L76">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+<span class="nc" id="L78">        return produtoRepository.findByRestauranteId(restauranteId);</span>
+    }
+
+    /**
+     * Lista produtos disponíveis por restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; listarDisponiveisPorRestaurante(Long restauranteId) {
+<span class="nc" id="L87">        log.info(&quot;Listando produtos disponíveis do restaurante ID: {}&quot;, restauranteId);</span>
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L90">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+<span class="nc" id="L92">        return produtoRepository.findByRestauranteIdAndDisponivelTrue(restauranteId);</span>
+    }
+
+    
+
+
+    /**
+     * Atualiza dados do produto
+     */
+    @Override
+    public Produto atualizar(Long id, ProdutoRequest produtoRequest) {
+<span class="nc" id="L103">        log.info(&quot;Atualizando produto ID: {}&quot;, id);</span>
+        
+        // Buscar o produto pelo ID
+<span class="nc" id="L106">        Produto produto = buscarPorId(id)</span>
+<span class="nc" id="L107">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Produto não encontrado: &quot; + id));</span>
+        
+        // Verificar se o restaurante existe
+<span class="nc" id="L110">        Restaurante restaurante = restauranteService.buscarPorId(produtoRequest.getRestauranteId())</span>
+<span class="nc" id="L111">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + produtoRequest.getRestauranteId()));</span>
+        
+        // Verificar se o produto pertence ao restaurante informado
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (!produto.getRestaurante().getId().equals(restaurante.getId())) {</span>
+<span class="nc" id="L115">            throw new IllegalArgumentException(&quot;O produto não pertence ao restaurante informado&quot;);</span>
+        }
+
+        // Atualizar dados do produto
+<span class="nc" id="L119">        produto.setNome(produtoRequest.getNome());</span>
+<span class="nc" id="L120">        produto.setDescricao(produtoRequest.getDescricao());</span>
+<span class="nc" id="L121">        produto.setPreco(produtoRequest.getPreco());</span>
+<span class="nc" id="L122">        produto.setCategoria(produtoRequest.getCategoria());</span>
+<span class="nc" id="L123">        produto.setImagemUrl(produtoRequest.getImagemUrl());</span>
+        
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if (produtoRequest.getDisponivel() != null) {</span>
+<span class="nc" id="L126">            produto.setAtivo(produtoRequest.getDisponivel());</span>
+        }
+        
+        // Validar dados atualizados
+<span class="nc" id="L130">        validarDadosProduto(produto);</span>
+        
+<span class="nc" id="L132">        Produto produtoSalvo = produtoRepository.save(produto);</span>
+<span class="nc" id="L133">        log.info(&quot;Produto atualizado com sucesso - ID: {}&quot;, produtoSalvo.getId());</span>
+        
+<span class="nc" id="L135">        return produtoSalvo;</span>
+    }
+
+    /**
+     * Exclui produto (fisicamente do banco)
+     */
+    @Override
+    public void excluir(Long id) {
+<span class="nc" id="L143">        log.info(&quot;Excluindo produto ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L145">        Produto produto = buscarPorId(id)</span>
+<span class="nc" id="L146">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Produto não encontrado: &quot; + id));</span>
+        
+        try {
+<span class="nc" id="L149">            produtoRepository.delete(produto);</span>
+<span class="nc" id="L150">            log.info(&quot;Produto excluído com sucesso - ID: {}&quot;, id);</span>
+<span class="nc" id="L151">        } catch (Exception e) {</span>
+<span class="nc" id="L152">            log.error(&quot;Erro ao excluir produto - ID: {}&quot;, id, e);</span>
+<span class="nc" id="L153">            throw new IllegalStateException(&quot;Não foi possível excluir o produto. Ele pode estar associado a pedidos.&quot;);</span>
+<span class="nc" id="L154">        }</span>
+<span class="nc" id="L155">    }</span>
+
+    /**
+     * Alterna disponibilidade do produto
+     */
+    @Override
+    public Produto alterarDisponibilidade(Long id) {
+<span class="nc" id="L162">        log.info(&quot;Alterando disponibilidade do produto ID: {}&quot;, id);</span>
+        
+<span class="nc" id="L164">        Produto produto = buscarPorId(id)</span>
+<span class="nc" id="L165">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Produto não encontrado: &quot; + id));</span>
+        
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        produto.setAtivo(!produto.getAtivo());</span>
+<span class="nc" id="L168">        Produto produtoSalvo = produtoRepository.save(produto);</span>
+        
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        String status = produtoSalvo.getAtivo() ? &quot;disponibilizado&quot; : &quot;indisponibilizado&quot;;</span>
+<span class="nc" id="L171">        log.info(&quot;Produto {} com sucesso - ID: {}&quot;, status, id);</span>
+        
+<span class="nc" id="L173">        return produtoSalvo;</span>
+    }
+
+    /**
+     * Busca produtos por nome e restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; buscarPorNome(Long restauranteId, String nome) {
+<span class="nc" id="L182">        log.info(&quot;Buscando produtos por nome: {} no restaurante ID: {}&quot;, nome, restauranteId);</span>
+        
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L186">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+        
+<span class="nc" id="L189">        return produtoRepository.findByRestauranteIdAndNomeContainingIgnoreCase(restauranteId, nome);</span>
+    }
+
+    /**
+     * Busca produtos por categoria e restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; buscarPorCategoria(Long restauranteId, String categoria) {
+<span class="nc" id="L198">        log.info(&quot;Buscando produtos por categoria: {} no restaurante ID: {}&quot;, categoria, restauranteId);</span>
+        
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L202">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+        
+<span class="nc" id="L205">        return produtoRepository.findByRestauranteIdAndCategoriaContainingIgnoreCase(restauranteId, categoria);</span>
+    }
+
+    /**
+     * Busca produtos por faixa de preço e restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; buscarPorFaixaDePreco(Long restauranteId, BigDecimal precoMin, BigDecimal precoMax) {
+<span class="nc" id="L214">        log.info(&quot;Buscando produtos por faixa de preço: {} - {} no restaurante ID: {}&quot;, </span>
+                precoMin, precoMax, restauranteId);
+        
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+        
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (precoMin == null) {</span>
+<span class="nc" id="L223">            precoMin = BigDecimal.ZERO;</span>
+        }
+        
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        if (precoMax == null) {</span>
+<span class="nc" id="L227">            precoMax = new BigDecimal(&quot;999999.99&quot;);</span>
+        }
+        
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (precoMin.compareTo(precoMax) &gt; 0) {</span>
+<span class="nc" id="L231">            throw new IllegalArgumentException(&quot;Preço mínimo não pode ser maior que o preço máximo&quot;);</span>
+        }
+        
+<span class="nc" id="L234">        return produtoRepository.findByRestauranteIdAndPrecoBetween(restauranteId, precoMin, precoMax);</span>
+    }
+
+    /**
+     * Produtos mais vendidos por restaurante
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; produtosMaisVendidos(Long restauranteId) {
+<span class="nc" id="L243">        log.info(&quot;Buscando produtos mais vendidos do restaurante ID: {}&quot;, restauranteId);</span>
+        
+        // Verificar se restaurante existe
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (!restauranteService.buscarPorId(restauranteId).isPresent()) {</span>
+<span class="nc" id="L247">            throw new IllegalArgumentException(&quot;Restaurante não encontrado: &quot; + restauranteId);</span>
+        }
+        
+<span class="nc" id="L250">        return produtoRepository.findMostSoldProductsByRestaurante(restauranteId);</span>
+    }
+
+
+    
+
+
+    /**
+     * Validações de negócio para produtos
+     */
+    private void validarDadosProduto(Produto produto) {
+<span class="nc bnc" id="L261" title="All 4 branches missed.">        if (produto.getNome() == null || produto.getNome().trim().isEmpty()) {</span>
+<span class="nc" id="L262">            throw new IllegalArgumentException(&quot;Nome é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        if (produto.getNome().length() &lt; 3) {</span>
+<span class="nc" id="L266">            throw new IllegalArgumentException(&quot;Nome deve ter pelo menos 3 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        if (produto.getNome().length() &gt; 100) {</span>
+<span class="nc" id="L270">            throw new IllegalArgumentException(&quot;Nome não pode ter mais de 100 caracteres&quot;);</span>
+        }
+
+<span class="nc bnc" id="L273" title="All 2 branches missed.">        if (produto.getPreco() == null) {</span>
+<span class="nc" id="L274">            throw new IllegalArgumentException(&quot;Preço é obrigatório&quot;);</span>
+        }
+
+<span class="nc bnc" id="L277" title="All 2 branches missed.">        if (produto.getPreco().compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="nc" id="L278">            throw new IllegalArgumentException(&quot;Preço deve ser maior que zero&quot;);</span>
+        }
+
+<span class="nc bnc" id="L281" title="All 4 branches missed.">        if (produto.getCategoria() == null || produto.getCategoria().trim().isEmpty()) {</span>
+<span class="nc" id="L282">            throw new IllegalArgumentException(&quot;Categoria é obrigatória&quot;);</span>
+        }
+
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (produto.getRestaurante() == null) {</span>
+<span class="nc" id="L286">            throw new IllegalArgumentException(&quot;Restaurante é obrigatório&quot;);</span>
+        }
+<span class="nc" id="L288">    }</span>
+
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Produto&gt; listarTodos() {
+<span class="nc" id="L294">        log.info(&quot;Listando todos os produtos&quot;);</span>
+<span class="nc" id="L295">        return produtoRepository.findAll();</span>
+    }
+
+    
+
+
+
+
+    
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

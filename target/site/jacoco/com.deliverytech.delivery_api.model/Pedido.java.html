@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pedido.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">delivery-api</a> &gt; <a href="index.source.html" class="el_package">com.deliverytech.delivery_api.model</a> &gt; <span class="el_source">Pedido.java</span></div><h1>Pedido.java</h1><pre class="source lang-java linenums">package com.deliverytech.delivery_api.model;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+<span class="nc bnc" id="L16" title="All 86 branches missed.">@Data</span>
+<span class="fc" id="L17">@NoArgsConstructor</span>
+<span class="nc" id="L18">@AllArgsConstructor</span>
+<span class="nc" id="L19">@Builder</span>
+public class Pedido {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+<span class="nc" id="L24">    private Long id;</span>
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;cliente_id&quot;)
+<span class="nc" id="L28">    private Cliente cliente;</span>
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;restaurante_id&quot;)
+<span class="nc" id="L32">    private Restaurante restaurante;</span>
+    
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L35">    private StatusPedido status;</span>
+    
+<span class="nc" id="L37">    private BigDecimal total;</span>
+    
+<span class="nc" id="L39">    private String enderecoEntrega;</span>
+    
+<span class="nc" id="L41">    private String observacao;</span>
+    
+<span class="nc" id="L43">    private LocalDateTime dataPedido;</span>
+    
+<span class="nc" id="L45">    private LocalDateTime dataEntrega;</span>
+    
+    // Relacionamento com ItemPedido
+<span class="pc" id="L48">    @OneToMany(mappedBy = &quot;pedido&quot;, cascade = CascadeType.ALL, orphanRemoval = true)</span>
+<span class="nc" id="L49">    private List&lt;ItemPedido&gt; itens = new ArrayList&lt;&gt;();</span>
+    
+    // Método para adicionar item ao pedido
+    public void adicionarItem(ItemPedido item) {
+<span class="nc" id="L53">        itens.add(item);</span>
+<span class="nc" id="L54">        item.setPedido(this);</span>
+<span class="nc" id="L55">        recalcularTotal();</span>
+<span class="nc" id="L56">    }</span>
+    
+    // Método para remover item do pedido
+    public void removerItem(ItemPedido item) {
+<span class="nc" id="L60">        itens.remove(item);</span>
+<span class="nc" id="L61">        recalcularTotal();</span>
+<span class="nc" id="L62">    }</span>
+    
+    // Método para recalcular o total do pedido
+    public void recalcularTotal() {
+<span class="nc" id="L66">        this.total = itens.stream()</span>
+<span class="nc" id="L67">            .map(ItemPedido::getSubtotal)</span>
+<span class="nc" id="L68">            .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+<span class="nc" id="L69">    }</span>
+    
+    // Método para verificar se o pedido pode ser atualizado
+    public boolean podeSerAtualizado() {
+<span class="nc bnc" id="L73" title="All 4 branches missed.">        return this.status == StatusPedido.REALIZADO || </span>
+               this.status == StatusPedido.CONFIRMADO;
+    }
+    
+    // Método para verificar se o pedido pode ser cancelado
+    public boolean podeSerCancelado() {
+<span class="nc bnc" id="L79" title="All 6 branches missed.">        return this.status != StatusPedido.EM_ENTREGA &amp;&amp; </span>
+               this.status != StatusPedido.ENTREGUE &amp;&amp; 
+               this.status != StatusPedido.CANCELADO;
+    }
+    
+    // Método para atualizar status
+    public void atualizarStatus(StatusPedido novoStatus) {
+<span class="nc" id="L86">        this.status = novoStatus;</span>
+        
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (novoStatus == StatusPedido.ENTREGUE) {</span>
+<span class="nc" id="L89">            this.dataEntrega = LocalDateTime.now();</span>
+        }
+<span class="nc" id="L91">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
