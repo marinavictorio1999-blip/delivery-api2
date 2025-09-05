@@ -1,0 +1,21 @@
+=== ENTREGA - TESTE DE ENDPOINT ===
+Data/Hora: 02/09/2025 22:55:08
+Método: POST
+URL Completa: http://localhost:8084/api/auth/register
+Status HTTP: 201
+Content-Type: application/json
+
+=== DADOS ENVIADOS ===
+{
+  "email" : "marinavictorio21@gmail.com",
+  "senha" : "slxrw12@",
+  "nome" : "Marina Victorio",
+  "role" : "ADMIN"
+}
+
+=== RESPOSTA REAL ===
+{
+  "nome" : "Marina Victorio",
+  "email" : "marinavictorio21@gmail.com",
+  "role" : "ADMIN"
+}

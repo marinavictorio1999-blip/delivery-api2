@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
     
+    Optional<Restaurante> findByNome(String nome);
     // Busca restaurante pelo CNPJ
     Optional<Restaurante> findByCnpj(String cnpj);
     

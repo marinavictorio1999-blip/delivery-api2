@@ -1,0 +1,17 @@
+=== ENTREGA - TESTE DE ENDPOINT ===
+Data/Hora: 02/09/2025 22:55:25
+Método: POST
+URL Completa: http://localhost:8084/api/auth/login
+Status HTTP: 200
+Content-Type: application/json
+
+=== DADOS ENVIADOS ===
+{
+  "username" : "marinavictorio21@gmail.com",
+  "password" : "slxrw12@"
+}
+
+=== RESPOSTA REAL ===
+{
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpbmF2aWN0b3JpbzIxQGdtYWlsLmNvbSIsImlhdCI6MTc1Njg2NDUyNSwiZXhwIjoxNzU2OTUwOTI1fQ.4dPDfYuCybECK4wHTtu7J-69A7fy-6YUSo1--lWI1f8"
+}

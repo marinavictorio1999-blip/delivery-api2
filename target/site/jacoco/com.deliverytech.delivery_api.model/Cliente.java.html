@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
-<span class="pc bnc" id="L11" title="All 62 branches missed.">@Data</span>
+<span class="nc bnc" id="L11" title="All 62 branches missed.">@Data</span>
 <span class="fc" id="L12">@NoArgsConstructor</span>
 <span class="nc" id="L13">@AllArgsConstructor</span>
 <span class="pc bnc" id="L14" title="All 4 branches missed.">@Builder</span>
@@ -18,12 +18,12 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 <span class="nc" id="L19">    private Long id;</span>
 
-<span class="nc" id="L21">    private String nome;</span>
+<span class="fc" id="L21">    private String nome;</span>
 <span class="nc" id="L22">    private String telefone;</span>
 <span class="nc" id="L23">    private String endereco;</span>
 
     @Column(unique = true)
-<span class="nc" id="L26">    private String email;</span>
+<span class="fc" id="L26">    private String email;</span>
 
     @Builder.Default
 <span class="pc" id="L29">    private Boolean ativo = true;</span>
@@ -42,15 +42,15 @@ public class Cliente {
     private List&lt;Pedido&gt; pedidos; */
 
     // Construtor customizado para testes
-<span class="nc" id="L45">    public Cliente(Long id, String nome, String email, String telefone, String endereco, LocalDateTime dataCriacao, Boolean ativo, Object unused) {</span>
-<span class="nc" id="L46">        this.id = id;</span>
-<span class="nc" id="L47">        this.nome = nome;</span>
-<span class="nc" id="L48">        this.email = email;</span>
-<span class="nc" id="L49">        this.telefone = telefone;</span>
-<span class="nc" id="L50">        this.endereco = endereco;</span>
-<span class="nc" id="L51">        this.dataCriacao = dataCriacao;</span>
-<span class="nc" id="L52">        this.ativo = ativo;</span>
+<span class="fc" id="L45">    public Cliente(Long id, String nome, String email, String telefone, String endereco, LocalDateTime dataCriacao, Boolean ativo, Object unused) {</span>
+<span class="fc" id="L46">        this.id = id;</span>
+<span class="fc" id="L47">        this.nome = nome;</span>
+<span class="fc" id="L48">        this.email = email;</span>
+<span class="fc" id="L49">        this.telefone = telefone;</span>
+<span class="fc" id="L50">        this.endereco = endereco;</span>
+<span class="fc" id="L51">        this.dataCriacao = dataCriacao;</span>
+<span class="fc" id="L52">        this.ativo = ativo;</span>
         // O parâmetro 'unused' é ignorado
-<span class="nc" id="L54">    }</span>
+<span class="fc" id="L54">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

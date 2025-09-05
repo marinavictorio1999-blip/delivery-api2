@@ -4,13 +4,13 @@ delivery-api,com.deliverytech.delivery_api.model,Produto.ProdutoBuilder,132,0,4,
 delivery-api,com.deliverytech.delivery_api.model,Pedido.PedidoBuilder,106,0,0,0,1,0,13,0,13,0
 delivery-api,com.deliverytech.delivery_api.model,Usuario,411,3,70,0,18,1,64,1,29,1
 delivery-api,com.deliverytech.delivery_api.model,Cliente.ClienteBuilder,93,0,4,0,1,0,12,0,10,0
-delivery-api,com.deliverytech.delivery_api.model,Produto,494,43,90,0,14,6,69,9,24,9
+delivery-api,com.deliverytech.delivery_api.model,Produto,518,19,90,0,15,5,75,3,30,3
 delivery-api,com.deliverytech.delivery_api.model,Endereco,343,0,62,0,11,0,52,0,21,0
-delivery-api,com.deliverytech.delivery_api.model,Restaurante.RestauranteBuilder,159,0,4,0,1,0,19,0,17,0
+delivery-api,com.deliverytech.delivery_api.model,Restaurante.RestauranteBuilder,84,75,2,2,0,1,12,7,10,7
 delivery-api,com.deliverytech.delivery_api.model,Endereco.EnderecoBuilder,72,0,0,0,1,0,10,0,10,0
-delivery-api,com.deliverytech.delivery_api.model,Restaurante,646,47,118,0,17,8,89,9,30,9
+delivery-api,com.deliverytech.delivery_api.model,Restaurante,607,86,118,0,17,8,92,6,33,6
 delivery-api,com.deliverytech.delivery_api.model,Role,3,33,0,0,1,2,1,1,1,1
-delivery-api,com.deliverytech.delivery_api.model,Cliente,350,34,62,0,17,5,48,8,17,8
+delivery-api,com.deliverytech.delivery_api.model,Cliente,340,44,62,0,7,15,50,6,19,6
 delivery-api,com.deliverytech.delivery_api.model,ItemPedido,374,3,70,0,16,1,57,1,22,1
 delivery-api,com.deliverytech.delivery_api.model,Pedido,550,8,98,0,30,2,81,1,32,1
 delivery-api,com.deliverytech.delivery_api.model,ItemPedido.ItemPedidoBuilder,76,0,0,0,1,0,10,0,10,0
@@ -73,4 +73,4 @@ delivery-api,com.deliverytech.delivery_api.config,SecurityConfig,0,85,0,0,0,12,0
 delivery-api,com.deliverytech.delivery_api.config,FilterConfig,0,25,0,0,0,6,0,2,0,2
 delivery-api,com.deliverytech.delivery_api.config,ModelMapperConfig,0,16,0,0,0,4,0,2,0,2
 delivery-api,com.deliverytech.delivery_api.config,ResponseCaptureFilter,248,15,10,0,57,4,7,1,2,1
-delivery-api,com.deliverytech.delivery_api.config,DataLoader,0,699,0,0,0,159,0,10,0,10
+delivery-api,com.deliverytech.delivery_api.config,DataLoader,344,227,6,6,109,50,10,6,6,4

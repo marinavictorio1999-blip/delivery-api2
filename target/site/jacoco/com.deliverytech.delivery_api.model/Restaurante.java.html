@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-<span class="pc bnc" id="L13" title="All 118 branches missed.">@Data</span>
+<span class="nc bnc" id="L13" title="All 118 branches missed.">@Data</span>
 <span class="fc" id="L14">@NoArgsConstructor</span>
-<span class="nc" id="L15">@AllArgsConstructor</span>
-<span class="pc bnc" id="L16" title="All 4 branches missed.">@Builder</span>
+<span class="fc" id="L15">@AllArgsConstructor</span>
+<span class="pc bpc" id="L16" title="2 of 4 branches missed.">@Builder</span>
 public class Restaurante {
 
     @Id
@@ -45,12 +45,12 @@ public class Restaurante {
     @Builder.Default
 <span class="pc" id="L46">    private LocalDateTime dataCadastro = LocalDateTime.now();</span>
 
-<span class="pc" id="L48">    @OneToMany(mappedBy = &quot;restaurante&quot;, cascade = CascadeType.ALL)</span>
+<span class="fc" id="L48">    @OneToMany(mappedBy = &quot;restaurante&quot;, cascade = CascadeType.ALL)</span>
     @JsonIgnore
 <span class="nc" id="L50">    private List&lt;Produto&gt; produtos = new ArrayList&lt;&gt;();</span>
 
     // Relacionamento com Pedidos
-<span class="pc" id="L53">    @OneToMany(mappedBy = &quot;restaurante&quot;)</span>
+<span class="fc" id="L53">    @OneToMany(mappedBy = &quot;restaurante&quot;)</span>
     @JsonIgnore
 <span class="nc" id="L55">    private List&lt;Pedido&gt; pedidos = new ArrayList&lt;&gt;();</span>
 
